@@ -35,11 +35,6 @@ namespace Nephila
                 "Node positions.",
                 GH_ParamAccess.list);
 
-            pManager.AddLineParameter(
-                "Edges", "E",
-                "Member connections.",
-                GH_ParamAccess.list);
-
             pManager.AddIntegerParameter(
                 "PP", "PP",
                 "Point-to-Point adjacency. Path = vertex index, values = neighbour indices.",
@@ -48,6 +43,11 @@ namespace Nephila
             pManager.AddIntegerParameter(
                 "PL", "PL",
                 "Point-to-Line adjacency. Path = vertex index, values = edge indices.",
+                GH_ParamAccess.tree);
+
+            pManager.AddIntegerParameter(
+                "LP", "LP",
+                "Line-to-Point adjacency. Path = edge index, values = [start, end] vertex indices.",
                 GH_ParamAccess.tree);
 
             pManager.AddVectorParameter(
@@ -77,13 +77,17 @@ namespace Nephila
 
             pManager.AddNumberParameter(
                 "Tolerance", "Tol",
-                 "Maximum number of iterations.",
+                "Convergence tolerance.",
                 GH_ParamAccess.item, Rhino.RhinoDoc.ActiveDoc.ModelAbsoluteTolerance);
 
+            pManager.AddIntegerParameter(
+                "CorrectionPasses", "CorPasses",
+                "Number of length-correction passes per iteration (for fixed edges).",
+                GH_ParamAccess.item, 10);
 
             // Optional
+            pManager[2].Optional = true;
             pManager[3].Optional = true;
-            pManager[4].Optional = true;
             pManager[7].Optional = true;
             pManager[8].Optional = true;
         }
@@ -94,18 +98,23 @@ namespace Nephila
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
         {
             pManager.AddPointParameter(
-                "Vertices", "V_out",
+                "Vertices", "V",
                 "Optimised node positions.",
                 GH_ParamAccess.list);
 
             pManager.AddNumberParameter(
-                "Forces", "Forces",
+                "Forces", "N",
                 "Axial forces N = q * L per member. q > 0 → Tension, q < 0 → Compression.",
                 GH_ParamAccess.list);
 
             pManager.AddNumberParameter(
-                "Lengths", "Lengths",
+                "Lengths", "L",
                 "Computed member lengths.",
+                GH_ParamAccess.list);
+
+            pManager.AddLineParameter(
+                "Lines", "E",
+                "Result edges as lines.",
                 GH_ParamAccess.list);
         }
 
@@ -117,38 +126,44 @@ namespace Nephila
             // ── Inputs ────────────────────────────────
             var anchorIndices = new List<int>();
             var points = new List<Point3d>();
-            var edges = new List<Line>();
             var PP = new GH_Structure<GH_Integer>();
             var PL = new GH_Structure<GH_Integer>();
+            var LP = new GH_Structure<GH_Integer>();
             var loads = new List<Vector3d>();
             var q = new List<double>();
             var fixedEdges = new List<int>();
             var targetLengths = new List<double>();
             int maxIterations = 1000;
             double tol = 0;
-            //maybe change to GH<point>
-            //https://discourse.mcneel.com/t/avoiding-null-point-conversion-to-0-0-0-in-gh-components/208434/2
+            int correctionPasses = 10;
 
             if (!DA.GetDataList(0, anchorIndices)) return;
             if (!DA.GetDataList(1, points)) return;
-            if (!DA.GetDataList(2, edges)) return;
-            if (!DA.GetDataTree(3, out PP)) PP = new GH_Structure<GH_Integer>();
-            if (!DA.GetDataTree(4, out PL)) PL = new GH_Structure<GH_Integer>();
+            DA.GetDataTree(2, out PP);
+            DA.GetDataTree(3, out PL);
+            if (!DA.GetDataTree(4, out LP)) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "LP tree required."); return; }
             if (!DA.GetDataList(5, loads)) loads = new List<Vector3d>();
             if (!DA.GetDataList(6, q)) return;
-            if (!DA.GetDataList(7, fixedEdges)) fixedEdges = new List<int>();
-            if (!DA.GetDataList(8, targetLengths)) targetLengths = new List<double>();
+            DA.GetDataList(7, fixedEdges);
+            DA.GetDataList(8, targetLengths);
             DA.GetData(9, ref maxIterations);
             DA.GetData(10, ref tol);
+            DA.GetData(11, ref correctionPasses);
 
             // ── Setup ─────────────────────────────────
             int vCount = points.Count;
+            int edgeCount = LP.Branches.Count;
 
             if (maxIterations > 10000)
             {
                 maxIterations = 10000;
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning,
-                    "Iterations capped at 10000.");
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Iterations capped at 10000.");
+            }
+
+            if (correctionPasses < 1)
+            {
+                correctionPasses = 1;
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "CorrectionPasses set to minimum of 1.");
             }
 
             // ── Anchors ───────────────────────────────
@@ -159,6 +174,17 @@ namespace Nephila
             // ── Fill load vector ──────────────────────
             while (loads.Count < vCount)
                 loads.Add(loads.Count > 0 ? loads[0] : Vector3d.Zero);
+
+            // ── Edge endpoints from LP ─────────────────
+            int[] edgeA = new int[edgeCount];
+            int[] edgeB = new int[edgeCount];
+
+            for (int e = 0; e < edgeCount; e++)
+            {
+                var branch = LP.Branches[e];
+                edgeA[e] = branch.Count > 0 ? branch[0].Value : -1;
+                edgeB[e] = branch.Count > 1 ? branch[1].Value : -1;
+            }
 
             // ── Neighbour / q cache ───────────────────
             int[][] neighborCache = new int[vCount][];
@@ -179,22 +205,8 @@ namespace Nephila
             }
 
             // ── Fixed-length constraint flag ──────────
-            bool hasFixed = fixedEdges != null && fixedEdges.Count > 0 &&
-                            targetLengths != null && targetLengths.Count == fixedEdges.Count;
-
-            // ── Edge endpoint indices ─────────────────
-            int[] edgeA = new int[edges.Count];
-            int[] edgeB = new int[edges.Count];
-
-            for (int e = 0; e < edges.Count; e++)
-            {
-                edgeA[e] = edgeB[e] = -1;
-                for (int i = 0; i < vCount; i++)
-                {
-                    if (points[i].DistanceTo(edges[e].From) < tol) edgeA[e] = i;
-                    if (points[i].DistanceTo(edges[e].To) < tol) edgeB[e] = i;
-                }
-            }
+            bool hasFixed = fixedEdges.Count > 0 &&
+                            targetLengths.Count == fixedEdges.Count;
 
             // ── Iteration loop ────────────────────────
             Point3d[] positions = points.ToArray();
@@ -205,7 +217,7 @@ namespace Nephila
             for (int it = 0; it < maxIterations; it++)
             {
                 // Force Density step
-               
+                Point3d[] result = (Point3d[])positions.Clone();
                 for (int v = 0; v < vCount; v++)
                 {
                     if (naked[v]) continue;
@@ -216,44 +228,49 @@ namespace Nephila
 
                     for (int i = 0; i < nb.Length; i++)
                     {
-                        sum += new Vector3d(positions[nb[i]]) * qCache[v][i];
+                        var p = positions[nb[i]];
+                        sum.X += p.X * qCache[v][i];
+                        sum.Y += p.Y * qCache[v][i];
+                        sum.Z += p.Z * qCache[v][i];
                         sumQ += qCache[v][i];
                     }
 
                     sum += loads[v];
 
                     if (Math.Abs(sumQ) > 1e-10)
-                        positions[v] = new Point3d(sum / sumQ);
+                        result[v] = new Point3d(sum / sumQ);
                 }
+                positions = result;
 
-                
-
-                // Target-length correction
+                // Target-length correction – MEHRFACH PASSAGEN
                 if (hasFixed)
                 {
-                    for (int k = 0; k < fixedEdges.Count; k++)
+                    for (int pass = 0; pass < correctionPasses; pass++)
                     {
-                        int e = fixedEdges[k];
-                        if (e < 0 || e >= edges.Count) continue;
-
-                        int a = edgeA[e], b = edgeB[e];
-                        if (a < 0 || b < 0) continue;
-
-                        double target = targetLengths[k];
-                        Vector3d dir = positions[b] - positions[a];
-                        double len = dir.Length;
-                        if (len < 1e-10) continue;
-
-                        dir /= len;
-                        double diff = len - target;
-
-                        if (!naked[a] && !naked[b])
+                        for (int k = 0; k < fixedEdges.Count; k++)
                         {
-                            positions[a] += dir * (diff * 0.5);
-                            positions[b] -= dir * (diff * 0.5);
+                            int e = fixedEdges[k];
+                            if (e < 0 || e >= edgeCount) continue;
+
+                            int a = edgeA[e], b = edgeB[e];
+                            if (a < 0 || b < 0) continue;
+
+                            double target = targetLengths[k];
+                            Vector3d dir = positions[b] - positions[a];
+                            double len = dir.Length;
+                            if (len < 1e-10) continue;
+
+                            dir /= len;
+                            double diff = len - target;
+
+                            if (!naked[a] && !naked[b])
+                            {
+                                positions[a] += dir * (diff * 0.5);
+                                positions[b] -= dir * (diff * 0.5);
+                            }
+                            else if (!naked[a]) { positions[a] += dir * diff; }
+                            else if (!naked[b]) { positions[b] -= dir * diff; }
                         }
-                        else if (!naked[a]) { positions[a] += dir * diff; }
-                        else if (!naked[b]) { positions[b] -= dir * diff; }
                     }
                 }
 
@@ -273,29 +290,30 @@ namespace Nephila
             sw.Stop();
 
             // ── Component message ─────────────────────
-            Message = $"it:{lastIt + 1} t:{sw.ElapsedMilliseconds}ms";
+            Message = $"it:{lastIt + 1}  t:{sw.ElapsedMilliseconds}ms  cor:{correctionPasses}";
 
             // ── Forces & lengths ──────────────────────
             var forces = new List<double>();
             var lengths = new List<double>();
-
-            for (int e = 0; e < edges.Count; e++)
+            var resultLines = new List<Line>();
+            for (int e = 0; e < edgeCount; e++)
             {
                 int a = edgeA[e], b = edgeB[e];
                 if (a < 0 || b < 0) continue;
+                Line line = new Line(positions[a], positions[b]);
+                resultLines.Add(line);
 
-                double L = positions[a].DistanceTo(positions[b]);
                 double qi = (e < q.Count) ? q[e] : 1.0;
-                lengths.Add(L);
-                forces.Add(qi * L);
+                double length = line.Length;
+                lengths.Add(length);
+                forces.Add(qi * length);
             }
-
-
 
             // ── Outputs ───────────────────────────────
             DA.SetDataList(0, positions.ToList());
             DA.SetDataList(1, forces);
             DA.SetDataList(2, lengths);
+            DA.SetDataList(3, resultLines);
         }
 
         // ─────────────────────────────────────────────

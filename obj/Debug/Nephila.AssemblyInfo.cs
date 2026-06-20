@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Structural form-finding tools for Grasshopper")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ce99d3416d86c80852529c6ae090a06e04f1e972")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+31e7b98a0ecf694cf64ef4f1b087a10773bbee03")]
 [assembly: System.Reflection.AssemblyProductAttribute("Nephila")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Nephila")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
