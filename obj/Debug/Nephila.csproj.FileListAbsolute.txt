@@ -1,12 +1,12 @@
-P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\bin\Debug\Nephila.dll
-P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\bin\Debug\Nephila.pdb
 P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\obj\Debug\Nephila.csproj.AssemblyReference.cache
-P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\obj\Debug\Nephila.Properties.Resources.resources
 P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\obj\Debug\Nephila.csproj.GenerateResource.cache
 P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\obj\Debug\Nephila.GeneratedMSBuildEditorConfig.editorconfig
 P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\obj\Debug\Nephila.AssemblyInfoInputs.cache
 P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\obj\Debug\Nephila.AssemblyInfo.cs
 P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\obj\Debug\Nephila.csproj.CoreCompileInputs.cache
 P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\obj\Debug\Nephila.sourcelink.json
-P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\obj\Debug\Nephila.dll
-P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\obj\Debug\Nephila.pdb
+P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\obj\Debug\Opuntia.Properties.Resources.resources
+P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\bin\Debug\Opuntia.dll
+P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\bin\Debug\Opuntia.pdb
+P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\obj\Debug\Opuntia.dll
+P:\02_Projekte\03_PhD\09_GH_PlugIn\Nephila\obj\Debug\Opuntia.pdb

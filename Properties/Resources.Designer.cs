@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Nephila.Properties {
+namespace Opuntia.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Nephila.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Nephila.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Opuntia.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -63,9 +63,9 @@ namespace Nephila.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap NephilaIcon_Spinne {
+        internal static System.Drawing.Bitmap Opuntia_Icon_Spinne {
             get {
-                object obj = ResourceManager.GetObject("NephilaIcon_Spinne", resourceCulture);
+                object obj = ResourceManager.GetObject("Opuntia_Icon_Spinne", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace Nephila.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap NephilaIconTopo {
+        internal static System.Drawing.Bitmap Opuntia_Icon_Topo {
             get {
-                object obj = ResourceManager.GetObject("NephilaIconTopo", resourceCulture);
+                object obj = ResourceManager.GetObject("Opuntia_Icon_Topo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

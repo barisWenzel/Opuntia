@@ -5,7 +5,7 @@ using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Types;
 using Rhino.Geometry;
 
-namespace Nephila
+namespace Opuntia
 {
     public class ReplaceByIndicesComponent : GH_Component
     {
@@ -14,7 +14,7 @@ namespace Nephila
                 "Replace By Indices", "RBI",
                 "Replaces values in a list at specified indices.\n" +
                 "Branch 0 → all indices in branch → replace with values[0]\n",
-                "Nephila", "Util")
+                "Opunita", "Util")
         { }
 
         protected override void RegisterInputParams(GH_InputParamManager pManager)

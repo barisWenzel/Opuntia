@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 
-namespace Nephila
+namespace Opuntia
 {
     public class OrderByVectorComponent : GH_Component
     {
@@ -11,7 +11,7 @@ namespace Nephila
             : base(
                 "Order By Vector", "OBV",
                 "Filters curves by alignment with a reference vector",
-                "Nephila", "Util")
+                "Opunita", "Util")
         { }
 
         protected override void RegisterInputParams(GH_InputParamManager pManager)

@@ -2,7 +2,7 @@ Hier die aktualisierte README mit beiden Komponenten:
 
 ---
 
-# Nephila — Force Density Grasshopper Plugin
+# Opunita — Force Density Grasshopper Plugin
 
 **A Grasshopper/Rhino plugin for structural form-finding using the Force Density Method (FDM).**
 
@@ -14,8 +14,8 @@ The plugin contains two components:
 
 | Component | Nickname | Category |
 |-----------|----------|----------|
-| Line Graph | `LGraph` | Nephila / Graph |
-| Force Density | `FD` | Nephila / Equilibrium |
+| Line Graph | `LGraph` | Opunita / Graph |
+| Force Density | `FD` | Opunita / Equilibrium |
 
 A typical workflow:
 
@@ -164,9 +164,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 ```bibtex
 @software{[yourname]_nephila_[year],
   author    = {Baris, Wenzel},
-  title     = {Nephila — Force Density Equilibrium Plugin for Grasshopper},
+  title     = {Opunita — Force Density Equilibrium Plugin for Grasshopper},
   year      = {2026},
-  url       = {https://github.com/barisWenzel/Nephila},
+  url       = {https://github.com/barisWenzel/Opunita},
   note      = {Developed as part of doctoral dissertation, [Universitaet]}
 }
 ```

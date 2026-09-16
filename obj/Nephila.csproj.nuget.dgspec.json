@@ -8,7 +8,7 @@
       "version": "1.0.0",
       "restore": {
         "projectUniqueName": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Nephila.csproj",
-        "projectName": "Nephila",
+        "projectName": "Opuntia",
         "projectPath": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Nephila.csproj",
         "packagesPath": "C:\\Users\\ac145501\\.nuget\\packages\\",
         "outputPath": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\obj\\",
@@ -41,13 +41,13 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "10.0.400"
       },
       "frameworks": {
         "net48": {
           "framework": "net48",
           "targetAlias": "net48",
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\RuntimeIdentifierGraph.json"
         }
       }
     }

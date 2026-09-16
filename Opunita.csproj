@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
-    <AssemblyName>Nephila</AssemblyName>
-    <RootNamespace>Nephila</RootNamespace>
+    <AssemblyName>Opuntia</AssemblyName>
+    <RootNamespace>Opuntia</RootNamespace>
     <OutputType>Library</OutputType>
     <LangVersion>7.3</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>

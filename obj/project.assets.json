@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Nephila.csproj",
-      "projectName": "Nephila",
-      "projectPath": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Nephila.csproj",
+      "projectUniqueName": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Opuntia\\Opunita.csproj",
+      "projectName": "Opuntia",
+      "projectPath": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Opuntia\\Opunita.csproj",
       "packagesPath": "C:\\Users\\ac145501\\.nuget\\packages\\",
-      "outputPath": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\obj\\",
+      "outputPath": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Opuntia\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\ac145501\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -47,13 +47,13 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "10.0.300"
+      "SdkAnalysisLevel": "10.0.400"
     },
     "frameworks": {
       "net48": {
         "framework": "net48",
         "targetAlias": "net48",
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\RuntimeIdentifierGraph.json"
       }
     }
   }

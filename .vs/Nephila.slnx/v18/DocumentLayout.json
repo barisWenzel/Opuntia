@@ -3,40 +3,36 @@
   "WorkspaceRootPath": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|p:\\02_projekte\\03_phd\\09_gh_plugin\\nephila\\regionunion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|solutionrelative:regionunion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|p:\\02_projekte\\03_phd\\09_gh_plugin\\nephila\\entknickoptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|solutionrelative:entknickoptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|p:\\02_projekte\\03_phd\\09_gh_plugin\\nephila\\solver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|solutionrelative:solver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|p:\\02_projekte\\03_phd\\09_gh_plugin\\nephila\\nephila.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|solutionrelative:nephila.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|p:\\02_projekte\\03_phd\\09_gh_plugin\\nephila\\linegraph.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|solutionrelative:linegraph.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|p:\\02_projekte\\03_phd\\09_gh_plugin\\nephila\\nephilainfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|solutionrelative:nephilainfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|p:\\02_projekte\\03_phd\\09_gh_plugin\\nephila\\properties\\resources.resx||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|solutionrelative:properties\\resources.resx||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|p:\\02_projekte\\03_phd\\09_gh_plugin\\nephila\\orderbyvector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|solutionrelative:orderbyvector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|p:\\02_projekte\\03_phd\\09_gh_plugin\\nephila\\properties\\resources.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|solutionrelative:properties\\resources.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|p:\\02_projekte\\03_phd\\09_gh_plugin\\nephila\\replacebyindices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|solutionrelative:replacebyindices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|p:\\02_projekte\\03_phd\\09_gh_plugin\\nephila\\helpers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|solutionrelative:helpers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|p:\\02_projekte\\03_phd\\09_gh_plugin\\nephila\\zirkelmethode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|solutionrelative:zirkelmethode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|p:\\02_projekte\\03_phd\\09_gh_plugin\\nephila\\nephila.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
       "RelativeMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|solutionrelative:nephila.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|p:\\02_projekte\\03_phd\\09_gh_plugin\\nephila\\helpers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E9F9DA12-501E-A622-9301-49815D823B8D}|Nephila.csproj|solutionrelative:helpers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -49,80 +45,61 @@
           "SelectedChildIndex": 1,
           "Children": [
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
-            },
-            {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "RegionUnion.cs",
-              "DocumentMoniker": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\RegionUnion.cs",
-              "RelativeDocumentMoniker": "RegionUnion.cs",
-              "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\RegionUnion.cs*",
-              "RelativeToolTip": "RegionUnion.cs*",
-              "ViewState": "AgIAAB8AAAAAAAAAAAAQwC4AAAAEAAAAAAAAAA==",
+              "DocumentIndex": 5,
+              "Title": "Zirkelmethode.cs",
+              "DocumentMoniker": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Zirkelmethode.cs",
+              "RelativeDocumentMoniker": "Zirkelmethode.cs",
+              "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Zirkelmethode.cs",
+              "RelativeToolTip": "Zirkelmethode.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-18T14:28:06.795Z",
+              "WhenOpened": "2026-09-09T19:43:45.046Z",
+              "IsPinned": true,
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "ReplaceByIndices.cs",
-              "DocumentMoniker": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\ReplaceByIndices.cs",
-              "RelativeDocumentMoniker": "ReplaceByIndices.cs",
-              "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\ReplaceByIndices.cs",
-              "RelativeToolTip": "ReplaceByIndices.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAXAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "EntknickOptions.cs",
+              "DocumentMoniker": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\EntknickOptions.cs",
+              "RelativeDocumentMoniker": "EntknickOptions.cs",
+              "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\EntknickOptions.cs",
+              "RelativeToolTip": "EntknickOptions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-13T23:36:35.795Z"
+              "WhenOpened": "2026-09-16T09:30:58.491Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "OrderByVector.cs",
-              "DocumentMoniker": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\OrderByVector.cs",
-              "RelativeDocumentMoniker": "OrderByVector.cs",
-              "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\OrderByVector.cs",
-              "RelativeToolTip": "OrderByVector.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADYAAABfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-13T23:33:40.833Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Helpers.cs",
-              "DocumentMoniker": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Helpers.cs",
-              "RelativeDocumentMoniker": "Helpers.cs",
-              "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Helpers.cs",
-              "RelativeToolTip": "Helpers.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-12T10:59:39.353Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "Nephila",
-              "DocumentMoniker": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Nephila.csproj",
-              "RelativeDocumentMoniker": "Nephila.csproj",
-              "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Nephila.csproj",
-              "RelativeToolTip": "Nephila.csproj",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-06-11T07:46:21.268Z"
+              "DocumentIndex": 3,
+              "Title": "Resources.resx",
+              "DocumentMoniker": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Properties\\Resources.resx",
+              "RelativeDocumentMoniker": "Properties\\Resources.resx",
+              "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Properties\\Resources.resx",
+              "RelativeToolTip": "Properties\\Resources.resx",
+              "ViewState": "AgIAAHEAAAAAAAAAAAAmwHgAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001005|",
+              "WhenOpened": "2026-09-16T09:29:02.115Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "NephilaInfo.cs",
-              "DocumentMoniker": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\NephilaInfo.cs",
-              "RelativeDocumentMoniker": "NephilaInfo.cs",
-              "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\NephilaInfo.cs",
-              "RelativeToolTip": "NephilaInfo.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABUAAAAFAAAAAAAAAA==",
+              "Title": "Resources.Designer.cs",
+              "DocumentMoniker": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Properties\\Resources.Designer.cs",
+              "RelativeDocumentMoniker": "Properties\\Resources.Designer.cs",
+              "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Properties\\Resources.Designer.cs",
+              "RelativeToolTip": "Properties\\Resources.Designer.cs",
+              "ViewState": "AgIAADYAAAAAAAAAAAAowEkAAABJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-11T07:14:22.549Z"
+              "WhenOpened": "2026-09-16T09:24:06.821Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
               "$type": "Document",
@@ -132,34 +109,48 @@
               "RelativeDocumentMoniker": "Solver.cs",
               "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Solver.cs",
               "RelativeToolTip": "Solver.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEgBAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAGwCAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-11T06:58:16.111Z",
+              "WhenOpened": "2026-09-09T19:43:45.224Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 7,
+              "Title": "Helpers.cs",
+              "DocumentMoniker": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Helpers.cs",
+              "RelativeDocumentMoniker": "Helpers.cs",
+              "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Helpers.cs",
+              "RelativeToolTip": "Helpers.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAMQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-09T19:43:45.237Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Nephila",
+              "DocumentMoniker": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Nephila.csproj",
+              "RelativeDocumentMoniker": "Nephila.csproj",
+              "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Nephila.csproj",
+              "RelativeToolTip": "Nephila.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-09-09T19:43:45.244Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "LineGraph.cs",
               "DocumentMoniker": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\LineGraph.cs",
               "RelativeDocumentMoniker": "LineGraph.cs",
               "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\LineGraph.cs",
               "RelativeToolTip": "LineGraph.cs",
-              "ViewState": "AgIAAKYAAAAAAAAAAAAIwLsAAAA1AAAAAAAAAA==",
+              "ViewState": "AgIAALUAAAAAAAAAAAAswMAAAAA/AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-11T06:58:08.944Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Nephila.csproj",
-              "DocumentMoniker": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Nephila.csproj",
-              "RelativeDocumentMoniker": "Nephila.csproj",
-              "ToolTip": "P:\\02_Projekte\\03_PhD\\09_GH_PlugIn\\Nephila\\Nephila.csproj",
-              "RelativeToolTip": "Nephila.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACwAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-06-11T06:56:45.508Z"
+              "WhenOpened": "2026-09-09T19:43:45.252Z",
+              "EditorCaption": ""
             }
           ]
         }
