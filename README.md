@@ -42,7 +42,7 @@ Builds a graph topology from a list of lines. Merges vertices, deduplicates edge
 
 ---
 
-### 2 · Constraint Options `Constraint` (Method 1)
+### 2 · Constraint Options `Constraint` 
 
 Target-length constraint for selected edges (e.g. compression struts). Connect the output to the solver's `O` input.
 
@@ -61,7 +61,7 @@ The force density of a constrained edge is not held constant: in each correction
 
 ---
 
-### 3 · Dekink Options `Dekink` (Method 3)
+### 3 · Dekink Options `Dekink` 
 
 Boundary dekinking. Removes kinks at selected boundary nodes by extrapolation along collinear neighbours, followed by re-relaxation. Connect the output to the solver's `O` input.
 
@@ -114,18 +114,20 @@ Iterative Force Density solver (Jacobi relaxation) for equilibrium form-finding 
 | q < 0 | Compression (strut/mast) |
 
 #### Method
-Nodal equilibrium:
+Each node $i$ is in equilibrium when the edge forces to its neighbours and the external load cancel out:
 
-Σ_{j∈N(i)} q_ij · (x_j − x_i) + p_i = 0
+$$\sum_{j \in N(i)} q_{ij}\,(x_j - x_i) + p_i = 0$$
 
-Jacobi update:
+Solving for $x_i$ gives the Jacobi update used in each iteration $k$:
 
-x_i^(k+1) = ( Σ_{j∈N(i)} q_ij · x_j^(k) + p_i ) / Σ_{j∈N(i)} q_ij
+$$x_i^{(k+1)} = \frac{\sum_{j \in N(i)} q_{ij}\,x_j^{(k)} + p_i}{\sum_{j \in N(i)} q_{ij}}$$
 
-Anchor nodes remain fixed. Constraint options act during iteration; Dekink options act after convergence.
+where $x_i$ is the position of node $i$, $N(i)$ the set of its neighbour nodes, $q_{ij}$ the force density of the edge between $i$ and $j$, and $p_i$ the external load at node $i$. In words: each free node moves to the force-density-weighted average of its neighbours, shifted by its load. Anchor nodes remain fixed. Constraint options act during iteration; Dekink options act after convergence.
 
 #### Convergence
-The solver stops when max_i |x_i^(k) − x_i^(k−1)| < Tol or when MaxIt is reached.
+The solver stops when the largest node displacement between two iterations falls below the tolerance, or when MaxIt is reached:
+
+$$\max_i \left| x_i^{(k)} - x_i^{(k-1)} \right| < \text{Tol}$$
 
 ---
 
