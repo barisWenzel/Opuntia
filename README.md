@@ -17,9 +17,8 @@ Opuntia is a framework for structural form-finding with the Force Density Method
 | Dekink Options | Dekink | Opuntia / Options |
 | Force Density | FD | Opuntia / Equilibrium |
 
-Typical workflow:
 
-![Typical workflow](docs/workflow.png)
+
 
 ---
 
