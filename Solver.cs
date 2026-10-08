@@ -17,7 +17,7 @@ namespace Opuntia
                 "Force Density Solver", "FDSolver",
                 "Solves structures using the Force Density Method (FDM). "
               + "Optional Constraint and Entknick via Options input.Version ="+ Ver,
-                "Opunita", "Solver")
+                "Opuntia", "Solver")
         {
         }
 

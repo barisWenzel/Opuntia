@@ -14,7 +14,7 @@ namespace Opuntia
             : base(
                 "Entknick Options", "Entknick",
                 "Boundary unknotting (Method 3). Attach to the solver's Options input.",
-                "Opunita", "Options")
+                "Opuntia", "Options")
         {
         }
 

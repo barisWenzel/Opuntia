@@ -14,7 +14,7 @@ namespace Opuntia
                 "Replace By Indices", "RBI",
                 "Replaces values in a list at specified indices.\n" +
                 "Branch 0 → all indices in branch → replace with values[0]\n",
-                "Opunita", "Util")
+                "Opuntia", "Util")
         { }
 
         protected override void RegisterInputParams(GH_InputParamManager pManager)

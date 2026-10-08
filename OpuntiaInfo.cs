@@ -10,7 +10,7 @@ namespace Opuntia
 
     public class NephilaInfo : GH_AssemblyInfo
     {
-        public override string Name => "Opunita";
+        public override string Name => "Opuntia";
         public override string Version => "0.1.0";
         public override string Description => "Structural form-finding tools: graph topology & force density method.";
         public override string AuthorName => "Baris Wenzel";

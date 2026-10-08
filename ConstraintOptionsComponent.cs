@@ -14,7 +14,7 @@ namespace Opuntia
             : base(
                 "Constraint Options", "Constraint",
                 "Target-length constraint (Method 1). Attach to the solver's Options input.",
-                "Opunita", "Options")
+                "Opuntia", "Options")
         {
         }
 

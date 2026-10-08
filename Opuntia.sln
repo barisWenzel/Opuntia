@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.1.32328.378
+# Visual Studio Version 18
+VisualStudioVersion = 18.11.12202.211
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nephila", "Nephila.csproj", "{E4D69442-EF61-4650-AB3D-93DE3785E79F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opunita", "Opunita.csproj", "{0F67F974-6243-603C-DAE8-07D4653D5E70}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E4D69442-EF61-4650-AB3D-93DE3785E79F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E4D69442-EF61-4650-AB3D-93DE3785E79F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E4D69442-EF61-4650-AB3D-93DE3785E79F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E4D69442-EF61-4650-AB3D-93DE3785E79F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F67F974-6243-603C-DAE8-07D4653D5E70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F67F974-6243-603C-DAE8-07D4653D5E70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F67F974-6243-603C-DAE8-07D4653D5E70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F67F974-6243-603C-DAE8-07D4653D5E70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

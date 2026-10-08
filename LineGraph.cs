@@ -19,7 +19,7 @@ namespace Opuntia
                 "deduplicated vertices, edges, adjacency trees.\n" +
                 "Points within tolerance are merged to their cluster centroid.\n" +
                 "Duplicate and degenerate edges are removed.",
-                "Opunita",
+                "Opuntia",
                 "Graph")
         { }
 

@@ -11,7 +11,7 @@ namespace Opuntia
             : base(
                 "Order By Vector", "OBV",
                 "Filters curves by alignment with a reference vector",
-                "Opunita", "Util")
+                "Opuntia", "Util")
         { }
 
         protected override void RegisterInputParams(GH_InputParamManager pManager)

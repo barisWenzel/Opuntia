@@ -1,185 +1,143 @@
-Hier die aktualisierte README mit beiden Komponenten:
+# Opuntia
+Force Density Framework for Grasshopper
 
----
+## Description
+Opuntia is a framework for structural form-finding with the Force Density Method (FDM) according to Linkwitz and Schek for the algorithmic modelling software [Grasshopper](https://www.grasshopper3d.com/), which is a plug-in of the commercial 3D computer graphics and computer-aided design application software [Rhinoceros](https://www.rhino3d.com/) (short Rhino3D). The main contribution is an iterative solver based on Jacobi relaxation that computes equilibrium geometries of cable nets and shells directly on a line graph. Constraints such as prescribed edge lengths or the dekinking of boundary nodes are added through a module-based option mechanism, so that further solver methods can be integrated without changing the core solver. The framework was developed in the context of the digital reconstruction of historical cable net structures at the University of Stuttgart. Results were validated against STIFF3D with deviations below 0.01 %.
 
-# Opunita — Force Density Grasshopper Plugin
+## Documentation
 
-**A Grasshopper/Rhino plugin for structural form-finding using the Force Density Method (FDM).**
-
----
-
-## Components
-
-The plugin contains two components:
+### Components
 
 | Component | Nickname | Category |
-|-----------|----------|----------|
-| Line Graph | `LGraph` | Opunita / Graph |
-| Force Density | `FD` | Opunita / Equilibrium |
+|---|---|---|
+| Line Graph | LGraph | Opuntia / Graph |
+| Constraint Options | Constraint | Opuntia / Options |
+| Dekink Options | Dekink | Opuntia / Options |
+| Force Density | FD | Opuntia / Equilibrium |
 
-A typical workflow:
+Typical workflow:
 
-```
-Lines → [Line Graph] → Points, Edges, PP, PL, LP
-                              ↓
-                      [Force Density] → Equilibrium Geometry
-```
+![Typical workflow](docs/workflow.png)
 
 ---
 
-## 1 · Line Graph `LGraph`
+### 1 · Line Graph `LGraph`
 
-Builds a graph topology from a list of lines. Deduplicates vertices and edges, and outputs adjacency trees for use in the solver.
+Builds a graph topology from a list of lines. Merges vertices, deduplicates edges and outputs adjacency trees for the solver.
 
-### Inputs
+#### Inputs
+| Name | Type | Default | Description |
+|---|---|---|---|
+| L | List&lt;Line&gt; | – | Input lines |
+| T | double | 0.001 | Point merge tolerance (optional) |
 
+#### Outputs
 | Name | Type | Description |
-|------|------|-------------|
-| `L` | `List<Line>` | Input lines |
-| `SE` | `bool` | Show edge index labels at midpoints |
-| `SV` | `bool` | Show vertex index labels at points |
-
-### Outputs
-
-| Name | Type | Description |
-|------|------|-------------|
-| `P` | `List<Point3d>` | Deduplicated vertex positions |
-| `E` | `List<Line>` | Deduplicated edges |
-| `PP` | `DataTree<int>` | Point–Point adjacency — path = vertex index, values = neighbour indices |
-| `PL` | `DataTree<int>` | Point–Edge adjacency — path = vertex index, values = edge indices |
-| `LP` | `DataTree<int>` | Edge–Point adjacency — path = edge index, values = [start, end] vertex indices |
-| `Labels` | `List<TextDot>` | Viewport labels for vertices and/or edges |
-
-### Notes
-
-- Vertex deduplication uses model tolerance (`RhinoDoc.ModelAbsoluteTolerance`)
-- Degenerate edges (start == end) are skipped
-- Duplicate edges are ignored regardless of direction
+|---|---|---|
+| V | List&lt;Point3d&gt; | Deduplicated, merged vertex positions |
+| E | List&lt;Line&gt; | Deduplicated edges |
+| PP | DataTree&lt;int&gt; | Point-to-point adjacency (path = vertex index, values = neighbour vertex indices) |
+| PL | DataTree&lt;int&gt; | Point-to-line adjacency (path = vertex index, values = incident edge indices) |
+| LP | DataTree&lt;int&gt; | Line-to-point adjacency (path = edge index, values = [start, end] vertex indices) |
 
 ---
 
-## 2 · Force Density Solver `FD`
+### 2 · Constraint Options `Constraint` (Method 1)
 
-Iterative Force Density solver for equilibrium form-finding of cable-net and shell structures.
+Target-length constraint for selected edges (e.g. compression struts). Connect the output to the solver's `O` input.
 
-### Inputs
-
+#### Inputs
 | Name | Type | Description |
-|------|------|-------------|
-| `anchorIndices` | `List<int>` | Indices of fixed anchor points |
-| `points` | `List<Point3d>` | Input point positions (from `LGraph`) |
-| `edges` | `List<Line>` | Input edges (from `LGraph`) |
-| `PP` | `DataTree<int>` | Point–Point adjacency (from `LGraph`) |
-| `PL` | `DataTree<int>` | Point–Edge adjacency (from `LGraph`) |
-| `P` | `List<Vector3d>` | External load vectors per node |
-| `q` | `List<double>` | Force density per edge |
-| `fixedEdges` | `List<int>` | Edge indices with target length *(optional)* |
-| `targetLengths` | `List<double>` | Target lengths for fixed edges *(optional)* |
-| `maxIterations` | `int` | Maximum iterations (capped at 10 000) |
+|---|---|---|
+| FixedEI | List&lt;int&gt; | Edge indices subject to target-length constraint |
+| TargetL | List&lt;double&gt; | Target lengths, paired with FixedEI |
 
-### Outputs
-
+#### Output
 | Name | Type | Description |
-|------|------|-------------|
-| `A` | `List<Point3d>` | Resulting node positions |
-| `EdgeLines` | `List<Line>` | Resulting edge geometry |
-| `F_out` | `List<double>` | Force per edge `q · L` |
-| `L_out` | `List<double>` | Length per edge |
+|---|---|---|
+| O | ConstraintOptions | Option object for the solver |
 
-### Sign Convention
+The force density of a constrained edge is not held constant: in each correction step it is derived from local nodal equilibrium, so that the edge carries exactly the residual force along its axis.
 
+---
+
+### 3 · Dekink Options `Dekink` (Method 3)
+
+Boundary dekinking. Removes kinks at selected boundary nodes by extrapolation along collinear neighbours, followed by re-relaxation. Connect the output to the solver's `O` input.
+
+#### Inputs
+| Name | Type | Default | Description |
+|---|---|---|---|
+| BI | List&lt;int&gt; | – | Indices of boundary nodes to dekink |
+| AngTol | double | 30.0 | Minimum collinearity angle (degrees) for extrapolation |
+| Passes | int | 3 | Number of dekink + re-relaxation passes after convergence |
+
+#### Output
+| Name | Type | Description |
+|---|---|---|
+| O | DekinkOptions | Option object for the solver |
+
+---
+
+### 4 · Force Density Solver `FD`
+
+Iterative Force Density solver (Jacobi relaxation) for equilibrium form-finding of cable nets and shells.
+
+#### Inputs
+| Name | Type | Default | Description |
+|---|---|---|---|
+| AI | List&lt;int&gt; | – | Indices of fixed (anchor) nodes (optional) |
+| V | List&lt;Point3d&gt; | – | Node positions (from LGraph) |
+| PP | DataTree&lt;int&gt; | – | Point-to-point adjacency (optional) |
+| PL | DataTree&lt;int&gt; | – | Point-to-line adjacency (optional) |
+| LP | DataTree&lt;int&gt; | – | Line-to-point adjacency |
+| P | List&lt;Vector3d&gt; | – | External load vector per node (optional) |
+| q | List&lt;double&gt; | – | Force density per edge |
+| O | List&lt;Option&gt; | – | Constraint and/or Dekink options (optional) |
+| MaxIt | int | 1000 | Maximum number of iterations |
+| Tol | double | model tolerance | Convergence tolerance |
+
+#### Outputs
+| Name | Type | Description |
+|---|---|---|
+| V | List&lt;Point3d&gt; | Optimised node positions |
+| N | List&lt;double&gt; | Axial force per member, N = q · L |
+| L | List&lt;double&gt; | Member lengths |
+| E | List&lt;Line&gt; | Result edges as lines |
+| Res | List&lt;double&gt; | Force-equilibrium residual per node |
+| dV | List&lt;double&gt; | Displacement of each node in the final iteration |
+
+#### Sign convention
 | Value | Meaning |
-|-------|---------|
-| `q > 0` | Tension (cable) |
-| `q < 0` | Compression (strut/mast) |
+|---|---|
+| q > 0 | Tension (cable) |
+| q < 0 | Compression (strut/mast) |
 
-### Convergence
+#### Method
+Nodal equilibrium:
 
-The solver stops when:
+Σ_{j∈N(i)} q_ij · (x_j − x_i) + p_i = 0
 
-$$\max_i \| \mathbf{x}_i^{(k)} - \mathbf{x}_i^{(k-1)} \| < \varepsilon$$
+Jacobi update:
 
-where $\varepsilon$ is the model tolerance. Iteration count and elapsed time are displayed on the component.
+x_i^(k+1) = ( Σ_{j∈N(i)} q_ij · x_j^(k) + p_i ) / Σ_{j∈N(i)} q_ij
 
----
+Anchor nodes remain fixed. Constraint options act during iteration; Dekink options act after convergence.
 
-## Method
-
-The Force Density Method (Schek, 1974) expresses nodal equilibrium as:
-
-$$\sum_{j \in N(i)} q_{ij} \cdot (\mathbf{x}_j - \mathbf{x}_i) + \mathbf{p}_i = 0$$
-
-Rearranged for the iterative update:
-
-$$\mathbf{x}_i^{(k+1)} = \frac{\sum_{j \in N(i)} q_{ij} \cdot \mathbf{x}_j^{(k)} + \mathbf{p}_i}{\sum_{j \in N(i)} q_{ij}}$$
-
-Anchor nodes remain fixed throughout iteration.
+#### Convergence
+The solver stops when max_i |x_i^(k) − x_i^(k−1)| < Tol or when MaxIt is reached.
 
 ---
 
 ## Requirements
-
 - Rhino 7 or 8
-- Grasshopper (included in Rhino)
 - .NET Framework 4.8
 
----
-
 ## Installation
-
-1. Build in Visual Studio (Release)
-2. Copy `.gha` to:
-   ```
-   %APPDATA%\Grasshopper\Libraries\
-   ```
-3. Rechtsklick → Eigenschaften → **Unblock**
-4. Restart Rhino
-
----
+1. Build in Visual Studio (Release).
+2. Copy `.gha` to `%APPDATA%\Grasshopper\Libraries\`.
+3. Right-click → Properties → Unblock.
+4. Restart Rhino.
 
 ## License
-
-```
-MIT License
-
-Copyright (c) [YEAR] [YOUR NAME]
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
-```
-
----
-
-## Citation
-
-```bibtex
-@software{[yourname]_nephila_[year],
-  author    = {Baris, Wenzel},
-  title     = {Opunita — Force Density Equilibrium Plugin for Grasshopper},
-  year      = {2026},
-  url       = {https://github.com/barisWenzel/Opunita},
-  note      = {Developed as part of doctoral dissertation, [Universitaet]}
-}
-```
-
----
-
-## References
-
-- Schek, H.-J. (1974). *The force density method for form finding and computation of general networks.* Computer Methods in Applied Mechanics and Engineering, 3(1), 115–134.
-
----
-
-## Author
-
-**[Baris Wenzel]**  
-[Universitaet Stuttgart]  
+MIT License © 2026 Baris Wenzel. See `LICENSE` for details.
