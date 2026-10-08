@@ -30,10 +30,6 @@ namespace Opuntia
                 "Target lengths for fixed edges (paired with FixedEdgeIndices).",
                 GH_ParamAccess.list);
 
-            pManager.AddIntegerParameter(
-                "Passes", "Passes",
-                "Number of Passes.",
-                 GH_ParamAccess.item);
         }
 
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
@@ -48,11 +44,11 @@ namespace Opuntia
         {
             var fixedEdges = new List<int>();
             var targetLengths = new List<double>();
-            int maxIterations = 10;
+         
 
             if (!DA.GetDataList(0, fixedEdges)) return;
             if (!DA.GetDataList(1, targetLengths)) return;
-            DA.GetData(2, ref maxIterations);
+            
 
             if (fixedEdges.Count != targetLengths.Count)
             {
@@ -61,7 +57,7 @@ namespace Opuntia
                 return;
             }
 
-            var opt = new ConstraintOptions(fixedEdges, targetLengths, maxIterations);
+            var opt = new ConstraintOptions(fixedEdges, targetLengths);
             DA.SetData(0, new GH_SolverOption(opt));
         }
 

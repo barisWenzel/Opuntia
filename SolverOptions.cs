@@ -21,11 +21,10 @@ namespace Opuntia
         public List<double> TargetLengths { get; }
         public int MaxIteration { get; }
 
-        public ConstraintOptions(List<int> fixedEdgeIndices, List<double> targetLengths, int maxIteration)
+        public ConstraintOptions(List<int> fixedEdgeIndices, List<double> targetLengths)
         {
             FixedEdgeIndices = fixedEdgeIndices ?? new List<int>();
             TargetLengths = targetLengths ?? new List<double>();
-            MaxIteration = maxIteration < 0 ? 0 : maxIteration;
         }
         
 

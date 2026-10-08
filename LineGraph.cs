@@ -72,11 +72,6 @@ namespace Opuntia
                 "Path = edge index, values = [start, end] vertex indices.",
                 GH_ParamAccess.tree);
 
-            pManager.AddIntegerParameter(        // 5
-                "Map", "Map",
-                "Input-line to edge index map.\n" +
-                "Null = degenerate/removed line.",
-                GH_ParamAccess.list);
 
         }
         
@@ -113,7 +108,7 @@ namespace Opuntia
             // ── Build edges ───────────────────────────────────────────────────
             var edges = new List<Line>();
             var edgeSet = new HashSet<(int, int)>();   // dedup
-            var map = new List<int?>();            // input index → edge index / null
+            
 
             // adjacency
             var pp = new DataTree<int>();
@@ -124,7 +119,7 @@ namespace Opuntia
 
             foreach (var ghLine in ghLines)
             {
-                if (ghLine == null) { map.Add(null); continue; }
+                if (ghLine == null) {continue; }
 
                 Line line = ghLine.Value;
 
@@ -132,28 +127,18 @@ namespace Opuntia
                 int b = GetOrAdd(line.To);
 
                 // degenerate
-                if (a == b) { map.Add(null); continue; }
+                if (a == b) {continue; }
 
                 // normalise order for dedup
                 var key = a < b ? (a, b) : (b, a);
 
-                 if (edgeDict.TryGetValue(key, out int existingIdx))
-                  {
-                      map.Add(null);  // Duplikat → null
-                     continue;
-                 }
 
-                 //Falls die duplikate in der map bleiben sollen
-                //if (edgeDict.TryGetValue(key, out int existingIdx))
-                //{
-                //    map.Add(existingIdx);
-               //     continue;
-               // }
+
 
                 int edgeIdx = edges.Count;
                 edgeDict[key] = edgeIdx;
                 edges.Add(new Line(vertices[a], vertices[b]));
-                map.Add(edgeIdx);
+
 
                 // LP
                 var lpPath = new GH_Path(edgeIdx);
@@ -175,12 +160,6 @@ namespace Opuntia
             DA.SetDataTree(2, pp);
             DA.SetDataTree(3, pl);
             DA.SetDataTree(4, lp);
-
-            // Map: null → GH_Integer with no value (empty param slot)
-            var mapOut = new List<GH_Integer>();
-            foreach (var m in map)
-                mapOut.Add(m.HasValue ? new GH_Integer(m.Value) : null);
-            DA.SetDataList(5, mapOut);
 
 
             Message = $"{vertices.Count} vertices\n{edges.Count} edges";
