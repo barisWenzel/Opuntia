@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -16,19 +16,21 @@ namespace Opuntia
             : base(
                 "Force Density Solver", "FDSolver",
                 "Solves structures using the Force Density Method (FDM). "
-              + "Optional Constraint and Entknick via Options input.Version ="+ Ver,
+              + "Optional Constraint and Entknick via Options input.Version =" + Ver,
                 "Opuntia", "Solver")
         {
         }
 
         // ── Solver-Zustand (fuer Methoden sichtbar) ──
         private Point3d[] positions;
-        private bool[] isAnchor;
+        private Point3d[] startPositions;  // Referenz fuer gesperrte Achsen
+        private bool[][] fixAxis;          // [v][0..2] = x/y/z gesperrt
+        private bool[] isAnchor;           // true = alle drei Achsen gesperrt
         private Vector3d[] loadVec;
-        private int[][] neighborCache;   // Nachbarknoten je Knoten (PP)
-        private int[][] edgeCacheN;      // Kantenindex je Nachbar (PL)
-        private double[][] qCache;       // q je Nachbar (synchron mit qEdge)
-        private double[] qEdge;          // q je Kante (maßgeblich)
+        private int[][] neighborCache;     // Nachbarknoten je Knoten (PP)
+        private int[][] edgeCacheN;        // Kantenindex je Nachbar (PL)
+        private double[][] qCache;         // q je Nachbar (synchron mit qEdge)
+        private double[] qEdge;            // q je Kante (massgeblich)
         private int[] edgeA;
         private int[] edgeB;
         private HashSet<int> hashBoundary;
@@ -38,30 +40,20 @@ namespace Opuntia
         private double tol;
         private double[] nodeDelta;
         private HashSet<int> comprEdges;
-        private static readonly string Ver =  System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        private static readonly string Ver = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
         // ─────────────────────────────────────────────
         //  Inputs
         // ─────────────────────────────────────────────
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
-            pManager.AddIntegerParameter("AnchorIndices", "AI",
-                "Indices of fixed (anchor) nodes.", GH_ParamAccess.list);
+            pManager.AddTextParameter("Fix", "Fix",
+                "Supports. Plain index = fixed in x, y and z (e.g. \"3\").\n" +
+                "Index + axes = only these axes fixed (e.g. \"3xy\", \"7z\").",
+                GH_ParamAccess.list);
 
-            pManager.AddPointParameter("Vertices", "V",
-                "Node positions.", GH_ParamAccess.list);
-
-            pManager.AddIntegerParameter("PP", "PP",
-                "Point-to-Point adjacency. Path = vertex index, values = neighbour indices.",
-                GH_ParamAccess.tree);
-
-            pManager.AddIntegerParameter("PL", "PL",
-                "Point-to-Line adjacency. Path = vertex index, values = edge indices.",
-                GH_ParamAccess.tree);
-
-            pManager.AddIntegerParameter("LP", "LP",
-                "Line-to-Point adjacency. Path = edge index, values = [start, end] vertex indices.",
-                GH_ParamAccess.tree);
+            pManager.AddGenericParameter("Graph", "G",
+                "Graph from Line Graph.", GH_ParamAccess.item);
 
             pManager.AddVectorParameter("Loads", "P",
                 "External load vectors per node.", GH_ParamAccess.list);
@@ -82,12 +74,9 @@ namespace Opuntia
                 Rhino.RhinoDoc.ActiveDoc.ModelAbsoluteTolerance);
 
             // Optional
-            pManager[0].Optional = true;  // Anchors
-            pManager[2].Optional = true;  // PP
-            pManager[3].Optional = true;  // PL
-            pManager[5].Optional = true;  // Loads
-            pManager[7].Optional = true;  // Options
-
+            pManager[0].Optional = true;  // Fix
+            pManager[2].Optional = true;  // Loads
+            pManager[4].Optional = true;  // Options
         }
 
         // ─────────────────────────────────────────────
@@ -99,7 +88,7 @@ namespace Opuntia
             pManager.AddNumberParameter("Forces", "N", "Axial forces N = q * L per member.", GH_ParamAccess.list);
             pManager.AddNumberParameter("Lengths", "L", "Computed member lengths.", GH_ParamAccess.list);
             pManager.AddLineParameter("Lines", "E", "Result edges as lines.", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Residuals", "Res", "Force-equilibrium residual per node.", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Residuals", "Res", "Force-equilibrium residual per node (free axes only).", GH_ParamAccess.list);
             pManager.AddNumberParameter("NodeDelta", "dV", "Displacement of each node in the final iteration.", GH_ParamAccess.list);
         }
 
@@ -109,29 +98,29 @@ namespace Opuntia
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             // ── Inputs ────────────────────────────────
-            var anchorIndices = new List<int>();
-            var points = new List<Point3d>();
-            var PP = new GH_Structure<GH_Integer>();
-            var PL = new GH_Structure<GH_Integer>();
-            var LP = new GH_Structure<GH_Integer>();
+            var fixInput = new List<string>();
+            IGH_Goo graphGoo = null;
             var loads = new List<Vector3d>();
             var q = new List<double>();
             var options = new List<IGH_Goo>();
             maxIterations = 1000;
             tol = 0;
 
-            if (!DA.GetDataList(0, anchorIndices))
+            if (!DA.GetDataList(0, fixInput))
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Warning,
-                    "No anchors provided – system may be unstable unless self-stressed (tensegrity).");
-            if (!DA.GetDataList(1, points)) return;
-            DA.GetDataTree(2, out PP);
-            DA.GetDataTree(3, out PL);
-            if (!DA.GetDataTree(4, out LP)) return;
-            if (!DA.GetDataList(5, loads)) loads = new List<Vector3d>();
-            if (!DA.GetDataList(6, q)) return;
-            DA.GetDataList(7, options);
-            DA.GetData(8, ref maxIterations);
-            DA.GetData(9, ref tol);
+                    "No supports provided – system may be unstable unless self-stressed (tensegrity).");
+            if (!DA.GetData(1, ref graphGoo)) return;
+            if (!(graphGoo is GH_OpuntiaGraph gg) || !gg.IsValid)
+            {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Input G is not a valid Opuntia graph.");
+                return;
+            }
+            OpuntiaGraph graph = gg.Value;
+            if (!DA.GetDataList(2, loads)) loads = new List<Vector3d>();
+            if (!DA.GetDataList(3, q)) return;
+            DA.GetDataList(4, options);
+            DA.GetData(5, ref maxIterations);
+            DA.GetData(6, ref tol);
 
             // ── Options entpacken ─────────────────────
             ConstraintOptions constraint = null;
@@ -146,8 +135,8 @@ namespace Opuntia
             }
 
             // ── Setup ─────────────────────────────────
-            vCount = points.Count;
-            edgeCount = LP.Branches.Count;
+            vCount = graph.VertexCount;
+            edgeCount = graph.EdgeCount;
 
             if (maxIterations > 10000)
             {
@@ -155,10 +144,14 @@ namespace Opuntia
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Iterations capped at 10000.");
             }
 
-            // ── Anchors ───────────────────────────────
+            // ── Lager je Achse ────────────────────────
+            fixAxis = new bool[vCount][];
+            for (int v = 0; v < vCount; v++) fixAxis[v] = new bool[3];
+            ParseFix(fixInput);
+
             isAnchor = new bool[vCount];
-            foreach (int idx in anchorIndices)
-                if (idx >= 0 && idx < vCount) isAnchor[idx] = true;
+            for (int v = 0; v < vCount; v++)
+                isAnchor[v] = fixAxis[v][0] && fixAxis[v][1] && fixAxis[v][2];
 
             // ── Loads ─────────────────────────────────
             while (loads.Count < vCount)
@@ -170,9 +163,8 @@ namespace Opuntia
             edgeB = new int[edgeCount];
             for (int e = 0; e < edgeCount; e++)
             {
-                var branch = LP.Branches[e];
-                edgeA[e] = branch.Count > 0 ? branch[0].Value : -1;
-                edgeB[e] = branch.Count > 1 ? branch[1].Value : -1;
+                edgeA[e] = graph.LP[e][0];
+                edgeB[e] = graph.LP[e][1];
             }
 
             // ── q je Kante ────────────────────────────
@@ -180,7 +172,7 @@ namespace Opuntia
             for (int e = 0; e < edgeCount; e++)
                 qEdge[e] = (e < q.Count) ? q[e] : 1.0;
 
-            // Druckstäbe einmal aus Start-q festhalten
+            // Druckstaebe einmal aus Start-q festhalten
             comprEdges = new HashSet<int>();
             for (int e = 0; e < edgeCount; e++)
                 if (qEdge[e] < 0) comprEdges.Add(e);
@@ -192,16 +184,12 @@ namespace Opuntia
 
             for (int v = 0; v < vCount; v++)
             {
-                var nb = PP.Branches[v];
-                var li = PL.Branches[v];
-                neighborCache[v] = nb.Select(x => x.Value).ToArray();
-                qCache[v] = new double[nb.Count];
-                edgeCacheN[v] = new int[nb.Count];
-
-                for (int i = 0; i < nb.Count; i++)
+                neighborCache[v] = (int[])graph.PP[v].Clone();
+                edgeCacheN[v] = (int[])graph.PL[v].Clone();
+                qCache[v] = new double[neighborCache[v].Length];
+                for (int i = 0; i < edgeCacheN[v].Length; i++)
                 {
-                    int ei = li[i].Value;
-                    edgeCacheN[v][i] = ei;
+                    int ei = edgeCacheN[v][i];
                     qCache[v][i] = (ei >= 0 && ei < qEdge.Length) ? qEdge[ei] : 1.0;
                 }
             }
@@ -214,26 +202,26 @@ namespace Opuntia
 
             // ── Solve ─────────────────────────────────
             var sw = Stopwatch.StartNew();
-            positions = points.ToArray();
+            positions = (Point3d[])graph.Vertices.Clone();
+            startPositions = (Point3d[])graph.Vertices.Clone();
 
             // 1) Relaxation bis Konvergenz (mit optionalem Constraint)
             int initIt = RelaxToEquilibrium(useConstraint ? constraint : null);
 
             // 2) Entknickung nach Konvergenz, smoothPasses-mal
-            int smoothCount = 0;
             if (useEntknick)
             {
                 double dotThreshold = Math.Cos(entknick.AngleTolerance * Math.PI / 180.0);
                 for (int pass = 0; pass < entknick.SmoothPasses; pass++)
                 {
                     DeknickRand(entknick.BoundaryIndices, dotThreshold);
-                    smoothCount++;
+                    EnforceFixed();
                     RelaxToEquilibrium(useConstraint ? constraint : null);
                 }
             }
             sw.Stop();
 
-            // ── Residuals ─────────────────────────────
+            // ── Residuals (nur freie Achsen) ──────────
             var residuals = new List<double>();
             for (int v = 0; v < vCount; v++)
             {
@@ -243,6 +231,9 @@ namespace Opuntia
                 for (int i = 0; i < nb.Length; i++)
                     residual += qCache[v][i] * (positions[nb[i]] - positions[v]);
                 residual += loadVec[v];
+                if (fixAxis[v][0]) residual.X = 0;   // Auflagerreaktion
+                if (fixAxis[v][1]) residual.Y = 0;
+                if (fixAxis[v][2]) residual.Z = 0;
                 residuals.Add(residual.Length);
             }
 
@@ -270,6 +261,59 @@ namespace Opuntia
             DA.SetDataList(3, resultLines);
             DA.SetDataList(4, residuals);
             DA.SetDataList(5, nodeDelta.ToList());
+        }
+
+        // ─────────────────────────────────────────────
+        //  Fix-Eingabe lesen: "3" = xyz, "3xy" = nur x und y
+        // ─────────────────────────────────────────────
+        private void ParseFix(List<string> fixInput)
+        {
+            foreach (string raw in fixInput)
+            {
+                if (string.IsNullOrWhiteSpace(raw)) continue;
+                string s = raw.Trim().ToLowerInvariant();
+
+                int k = 0;
+                while (k < s.Length && char.IsDigit(s[k])) k++;
+                if (k == 0 || !int.TryParse(s.Substring(0, k), out int idx) || idx < 0 || idx >= vCount)
+                {
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, $"Invalid Fix entry ignored: \"{raw}\"");
+                    continue;
+                }
+
+                string axes = s.Substring(k).Trim();
+                if (axes.Length == 0)
+                {
+                    fixAxis[idx][0] = fixAxis[idx][1] = fixAxis[idx][2] = true;
+                    continue;
+                }
+
+                foreach (char c in axes)
+                {
+                    if (c == 'x') fixAxis[idx][0] = true;
+                    else if (c == 'y') fixAxis[idx][1] = true;
+                    else if (c == 'z') fixAxis[idx][2] = true;
+                    else AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, $"Unknown axis '{c}' in Fix entry \"{raw}\"");
+                }
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        //  Gesperrte Achsen auf Startkoordinate zuruecksetzen
+        // ─────────────────────────────────────────────
+        private void EnforceFixed()
+        {
+            for (int v = 0; v < vCount; v++)
+            {
+                bool[] f = fixAxis[v];
+                if (!f[0] && !f[1] && !f[2]) continue;
+                Point3d p = positions[v];
+                Point3d s = startPositions[v];
+                positions[v] = new Point3d(
+                    f[0] ? s.X : p.X,
+                    f[1] ? s.Y : p.Y,
+                    f[2] ? s.Z : p.Z);
+            }
         }
 
         // ─────────────────────────────────────────────
@@ -305,13 +349,23 @@ namespace Opuntia
                     sum += loadVec[v];
 
                     if (Math.Abs(sumQ) > 1e-10)
-                        result[v] = new Point3d(sum / sumQ);
+                    {
+                        Point3d cur = positions[v];
+                        bool[] f = fixAxis[v];
+                        result[v] = new Point3d(
+                            f[0] ? cur.X : sum.X / sumQ,
+                            f[1] ? cur.Y : sum.Y / sumQ,
+                            f[2] ? cur.Z : sum.Z / sumQ);
+                    }
                 }
                 positions = result;
 
                 // Optional: Target-Length-Korrektur (Methode 1)
                 if (constraint != null)
+                {
                     ApplyConstraint(constraint);
+                    EnforceFixed();
+                }
 
                 // Konvergenz
                 if (nodeDelta == null || nodeDelta.Length != vCount)
@@ -323,7 +377,7 @@ namespace Opuntia
                     nodeDelta[v] = d;
                     if (d > maxDelta) maxDelta = d;
                 }
-                if (maxDelta < tol) { lastIt = it + 1; break; } //hier tolerance
+                if (maxDelta < tol) { lastIt = it + 1; break; }
 
                 prevPositions = (Point3d[])positions.Clone();
             }

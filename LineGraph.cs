@@ -1,6 +1,5 @@
-﻿using Grasshopper;
 using Grasshopper.Kernel;
-using Grasshopper.Kernel.Data;
+using Grasshopper.Kernel.Parameters;
 using Grasshopper.Kernel.Types;
 using Rhino.Geometry;
 using System;
@@ -9,19 +8,31 @@ using System.Linq;
 
 namespace Opuntia
 {
-    public class LineGraphComponent : GH_Component
+    public class LineGraphComponent : GH_Component, IGH_VariableParameterComponent
     {
         public LineGraphComponent()
             : base(
                 "Line Graph",
                 "LGraph",
-                "Builds a graph topology from lines:\n" +
-                "deduplicated vertices, edges, adjacency trees.\n" +
-                "Points within tolerance are merged to their cluster centroid.\n" +
-                "Duplicate and degenerate edges are removed.",
+                "Builds a graph topology from lines.\n" +
+                "Points within tolerance are merged to the first point found.\n" +
+                "Duplicate and degenerate edges are removed.\n" +
+                "Zoom in to add outputs (V, E, PP, PL, LP).",
                 "Opuntia",
                 "Graph")
         { }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  Optionale Ausgaenge (feste Reihenfolge, per ZUI zuschaltbar)
+        // ─────────────────────────────────────────────────────────────────────
+        private static readonly (string Name, string Nick, string Desc)[] Extra =
+        {
+            ("Vertices", "V",  "Deduplicated, merged vertex positions."),
+            ("Edges",    "E",  "Deduplicated edges."),
+            ("PP",       "PP", "Point-to-Point adjacency.\nPath = vertex index, values = neighbour vertex indices."),
+            ("PL",       "PL", "Point-to-Line adjacency.\nPath = vertex index, values = incident edge indices."),
+            ("LP",       "LP", "Line-to-Point adjacency.\nPath = edge index, values = [start, end] vertex indices."),
+        };
 
         // ─────────────────────────────────────────────────────────────────────
         //  Parameters
@@ -39,42 +50,58 @@ namespace Opuntia
                 GH_ParamAccess.item, 0.001);
 
             pManager[1].Optional = true;
-
         }
 
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
         {
-            pManager.AddPointParameter(          // 0
-                "Vertices", "V",
-                "Deduplicated, merged vertex positions.",
-                GH_ParamAccess.list);
-
-            pManager.AddLineParameter(           // 1
-                "Edges", "E",
-                "Deduplicated edges.",
-                GH_ParamAccess.list);
-
-            pManager.AddIntegerParameter(        // 2
-                "PP", "PP",
-                "Point-to-Point adjacency.\n" +
-                "Path = vertex index, values = neighbour vertex indices.",
-                GH_ParamAccess.tree);
-
-            pManager.AddIntegerParameter(        // 3
-                "PL", "PL",
-                "Point-to-Line adjacency.\n" +
-                "Path = vertex index, values = incident edge indices.",
-                GH_ParamAccess.tree);
-
-            pManager.AddIntegerParameter(        // 4
-                "LP", "LP",
-                "Line-to-Point adjacency.\n" +
-                "Path = edge index, values = [start, end] vertex indices.",
-                GH_ParamAccess.tree);
-
-
+            pManager.AddGenericParameter(        // 0
+                "Graph", "G",
+                "Graph topology for the solver.",
+                GH_ParamAccess.item);
         }
-        
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  ZUI
+        // ─────────────────────────────────────────────────────────────────────
+        public bool CanInsertParameter(GH_ParameterSide side, int index) =>
+            side == GH_ParameterSide.Output &&
+            index == Params.Output.Count &&
+            index <= Extra.Length;
+
+        public bool CanRemoveParameter(GH_ParameterSide side, int index) =>
+            side == GH_ParameterSide.Output &&
+            index == Params.Output.Count - 1 &&
+            index > 0;
+
+        public IGH_Param CreateParameter(GH_ParameterSide side, int index)
+        {
+            IGH_Param p;
+            switch (index)
+            {
+                case 1: p = new Param_Point(); break;
+                case 2: p = new Param_Line(); break;
+                default: p = new Param_Integer(); break;
+            }
+            ApplyDefinition(p, index);
+            return p;
+        }
+
+        public bool DestroyParameter(GH_ParameterSide side, int index) => true;
+
+        public void VariableParameterMaintenance()
+        {
+            for (int i = 1; i < Params.Output.Count; i++)
+                ApplyDefinition(Params.Output[i], i);
+        }
+
+        private static void ApplyDefinition(IGH_Param p, int index)
+        {
+            var d = Extra[index - 1];
+            p.Name = d.Name;
+            p.NickName = d.Nick;
+            p.Description = d.Desc;
+            p.Access = index <= 2 ? GH_ParamAccess.list : GH_ParamAccess.tree;
+        }
 
         // ─────────────────────────────────────────────────────────────────────
         //  SolveInstance
@@ -84,83 +111,66 @@ namespace Opuntia
             // ── Inputs ────────────────────────────────────────────────────────
             var ghLines = new List<GH_Line>();
             if (!DA.GetDataList(0, ghLines)) return;
-            // HINWEIS: Wir lesen GH_Line (nicht Line direkt), um den Null-Bug zu
-            // vermeiden. Point3d ist ein Struct – ein null würde stillschweigend
-            // zu (0,0,0) konvertiert.
-            // Quelle: https://discourse.mcneel.com/t/avoiding-null-point-conversion-
+            // HINWEIS: GH_Line statt Line lesen, sonst wird null still zu (0,0,0).
 
-
-            double tolerance = tolerance = Rhino.RhinoDoc.ActiveDoc.ModelAbsoluteTolerance;
+            double tolerance = Rhino.RhinoDoc.ActiveDoc.ModelAbsoluteTolerance;
             DA.GetData(1, ref tolerance);
-            
 
-            // ── Build vertex list ─────────────────────────────────────────────
+            // ── Vertices ──────────────────────────────────────────────────────
             var vertices = new List<Point3d>();
+            var pp = new List<List<int>>();
+            var pl = new List<List<int>>();
 
             int GetOrAdd(Point3d pt)
             {
                 for (int i = 0; i < vertices.Count; i++)
                     if (vertices[i].DistanceTo(pt) <= tolerance) return i;
                 vertices.Add(pt);
+                pp.Add(new List<int>());
+                pl.Add(new List<int>());
                 return vertices.Count - 1;
             }
 
-            // ── Build edges ───────────────────────────────────────────────────
+            // ── Edges ─────────────────────────────────────────────────────────
             var edges = new List<Line>();
-            var edgeSet = new HashSet<(int, int)>();   // dedup
-            
-
-            // adjacency
-            var pp = new DataTree<int>();
-            var pl = new DataTree<int>();
-            var lp = new DataTree<int>();
-
-            var edgeDict = new Dictionary<(int, int), int>();
+            var lp = new List<int[]>();
+            var edgeSet = new HashSet<(int, int)>();
 
             foreach (var ghLine in ghLines)
             {
-                if (ghLine == null) {continue; }
-
+                if (ghLine == null) continue;
                 Line line = ghLine.Value;
 
                 int a = GetOrAdd(line.From);
                 int b = GetOrAdd(line.To);
+                if (a == b) continue;                          // degeneriert
 
-                // degenerate
-                if (a == b) {continue; }
-
-                // normalise order for dedup
                 var key = a < b ? (a, b) : (b, a);
-
-
-
+                if (!edgeSet.Add(key)) continue;               // doppelt
 
                 int edgeIdx = edges.Count;
-                edgeDict[key] = edgeIdx;
                 edges.Add(new Line(vertices[a], vertices[b]));
+                lp.Add(new[] { a, b });
 
-
-                // LP
-                var lpPath = new GH_Path(edgeIdx);
-                lp.Add(a, lpPath);
-                lp.Add(b, lpPath);
-
-                // PP
-                pp.Add(b, new GH_Path(a));
-                pp.Add(a, new GH_Path(b));
-
-                // PL
-                pl.Add(edgeIdx, new GH_Path(a));
-                pl.Add(edgeIdx, new GH_Path(b));
+                pp[a].Add(b); pl[a].Add(edgeIdx);
+                pp[b].Add(a); pl[b].Add(edgeIdx);
             }
 
-            // ── Outputs ───────────────────────────────────────────────────────
-            DA.SetDataList(0, vertices);
-            DA.SetDataList(1, edges);
-            DA.SetDataTree(2, pp);
-            DA.SetDataTree(3, pl);
-            DA.SetDataTree(4, lp);
+            var graph = new OpuntiaGraph(
+                vertices.ToArray(),
+                edges.ToArray(),
+                pp.Select(x => x.ToArray()).ToArray(),
+                pl.Select(x => x.ToArray()).ToArray(),
+                lp.ToArray());
 
+            // ── Outputs ───────────────────────────────────────────────────────
+            int n = Params.Output.Count;
+            DA.SetData(0, new GH_OpuntiaGraph(graph));
+            if (n > 1) DA.SetDataList(1, graph.Vertices);
+            if (n > 2) DA.SetDataList(2, graph.Edges);
+            if (n > 3) DA.SetDataTree(3, OpuntiaGraph.ToTree(graph.PP));
+            if (n > 4) DA.SetDataTree(4, OpuntiaGraph.ToTree(graph.PL));
+            if (n > 5) DA.SetDataTree(5, OpuntiaGraph.ToTree(graph.LP));
 
             Message = $"{vertices.Count} vertices\n{edges.Count} edges";
         }
