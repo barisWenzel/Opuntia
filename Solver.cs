@@ -41,6 +41,7 @@ namespace Opuntia
         private double[] nodeDelta;
         private HashSet<int> comprEdges;
         private static readonly string Ver = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        private double lastMaxDelta;
 
         // ─────────────────────────────────────────────
         //  Inputs
@@ -207,6 +208,7 @@ namespace Opuntia
 
             // 1) Relaxation bis Konvergenz (mit optionalem Constraint)
             int initIt = RelaxToEquilibrium(useConstraint ? constraint : null);
+            int lastRunIt = initIt;
 
             // 2) Entknickung nach Konvergenz, smoothPasses-mal
             if (useEntknick)
@@ -216,7 +218,7 @@ namespace Opuntia
                 {
                     DeknickRand(entknick.BoundaryIndices, dotThreshold);
                     EnforceFixed();
-                    RelaxToEquilibrium(useConstraint ? constraint : null);
+                    lastRunIt = RelaxToEquilibrium(useConstraint ? constraint : null);
                 }
             }
             sw.Stop();
@@ -252,7 +254,15 @@ namespace Opuntia
                 forces.Add(qEdge[e] * length);
             }
 
-            Message = $"it:{initIt} \n t:{sw.ElapsedMilliseconds}ms";
+            // ── Message ───────────────────────────────
+            bool converged = lastMaxDelta < tol;
+            if (!converged)
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning,
+                    $"Not converged after {lastRunIt} iterations (max dV = {lastMaxDelta:G4}, Tol = {tol:G4}).");
+
+            Message = converged
+                ? $"it:{initIt} \n t:{sw.ElapsedMilliseconds}ms"
+                : $"NOT CONVERGED \n it:{lastRunIt}";
 
             // ── Outputs ───────────────────────────────
             DA.SetDataList(0, positions.ToList());
@@ -377,6 +387,7 @@ namespace Opuntia
                     nodeDelta[v] = d;
                     if (d > maxDelta) maxDelta = d;
                 }
+                lastMaxDelta = maxDelta;
                 if (maxDelta < tol) { lastIt = it + 1; break; }
 
                 prevPositions = (Point3d[])positions.Clone();
