@@ -13,7 +13,7 @@ The name refers to the opuntia spider (*Cyrtophora citricola*), which is commonl
 
 ### Components
 
-![Opuntia components](docs/components.png)
+![Opuntia components](docs/components/all.png)
 
 | No. | Component | Nickname | Category |
 |---|---|---|---|
@@ -42,7 +42,7 @@ All example images use the same numbering:
 
 Numbers that do not occur in an example are omitted.
 
-![Typical workflow](docs/examples/01_four_point_net.png)
+![Typical workflow](docs/examples/1.png)
 
 ### Zoomable inputs and outputs
 Optional parameters are hidden by default to keep the components compact. Zoom in on a component until **+** and **−** icons appear next to the parameters, then click **+** to add the next optional parameter or **−** to remove the last one. Optional parameters are always added in the order listed below. If an optional input is not shown, its default value is used.
@@ -203,6 +203,10 @@ $$\max_i \left| x_i^{(k)} - x_i^{(k-1)} \right| < \text{Tol}$$
 
 Replaces items of a list at given indices, e.g. to assign individual force densities to selected edges.
 
+![Replace By Indices](docs/components/replace.png)
+
+All edges start with q = 1. The edges listed in each index group (edge cables, guy ropes, struts) are overwritten with the corresponding value.
+
 #### Inputs
 | Name | Type | Description |
 |---|---|---|
@@ -221,42 +225,37 @@ Replaces items of a list at given indices, e.g. to assign individual force densi
 Example definitions are provided in the `examples/` folder. Force densities and index lists are derived step by step in the first example in which they occur. Later examples use them as internalised data. These values refer to the edge order of the Line Graph component and must be updated if the input geometry changes.
 
 ### Example 1 · Four-point net
-![Four-point net](docs/examples/01_four_point_net.png)
+![Four-point net](docs/examples/1.png)
 
 Form-finding of a classic four-point cable net. Two anchor points are raised and two are lowered, resulting in an anticlastic, saddle-shaped surface. All edges are given q = 1, the edge cables are then overwritten with q = 5 (5). P can be left empty for prestressed form-finding (4). Coordinates, force densities and load vectors are taken from the [STIFF example dataset of TU Munich](https://www.cee.ed.tum.de/fileadmin/w00cbe/st/Software/Education/Stiff/Beispiele/Kraftdichte_4P-Zelt_1_3D.xlsx).
 
-### Example 2 · Assigning force densities
-![Assigning force densities](docs/examples/02_replace_by_indices.png)
-
-Different force densities are assigned to groups of edges (edge cables, guy ropes, struts) with Replace By Indices (11). All edges start with q = 1; the edges listed in each index group are overwritten with the corresponding value.
-
-### Example 3 · Net with masts and target length
-![Net with masts](docs/examples/03_masts_target_length.png)
+### Example 2 · Net with masts and target length
+![Net with masts](docs/examples/2.png)
 
 Cable net supported by two masts with guy ropes. The masts are compression struts (red) whose length is prescribed with Target Length (9).
 
-### Example 4 · Shell under load
-![Shell under load](docs/examples/04_shell_load.png)
+### Example 3 · Shell under load
+![Shell under load](docs/examples/3.png)
 
 Compression shell (red) under vertical loads (4). Boundary nodes receive a larger load than inner nodes.
 
-### Example 5 · Shell with target length
-![Shell with target length](docs/examples/05_shell_target_length.png)
+### Example 4 · Shell with target length
+![Shell with target length](docs/examples/4.png)
 
-As Example 4, with a prescribed length for the inner members (9). Green: constrained edges.
+As Example 3, with a prescribed length for the inner members (9). Green: constrained edges.
 
-### Example 6 · De-Kink
-![De-Kink](docs/examples/06_dekink.png)
+### Example 5 · De-Kink
+![De-Kink](docs/examples/5.png)
 
 Top view of a net with De-Kink applied to the boundary nodes (10). Green: result without De-Kink.
 
-### Example 7 · Multi-mast net
-![Multi-mast net](docs/examples/07_multi_mast.png)
+### Example 6 · Multi-mast net
+![Multi-mast net](docs/examples/6.png)
 
 Larger cable net with three masts and guy ropes. The mast lengths are prescribed with Target Length (9).
 
-### Example 8 · Per-axis supports
-![Per-axis supports](docs/examples/08_per_axis_supports.png)
+### Example 7 · Per-axis supports
+![Per-axis supports](docs/examples/7.png)
 
 Supports can be fixed per axis (2). The value lists switch individual axes of the anchors and free vertices on or off. Green: result with all axes of the free vertices released.
 
