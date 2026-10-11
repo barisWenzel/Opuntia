@@ -201,11 +201,7 @@ $$\max_i \left| x_i^{(k)} - x_i^{(k-1)} \right| < \text{Tol}$$
 
 ### 5 · Replace By Indices `Replace`
 
-Replaces items of a list at given indices, e.g. to assign individual force densities to selected edges.
-
-![Replace By Indices](docs/components/replace.png)
-
-All edges start with q = 1. The edges listed in each index group (edge cables, guy ropes, struts) are overwritten with the corresponding value.
+Replaces items of a list at given indices, e.g. to assign individual force densities to selected edges (see Example 8).
 
 #### Inputs
 | Name | Type | Description |
@@ -260,6 +256,11 @@ Larger cable net with three masts and guy ropes. The mast lengths are prescribed
 Supports can be fixed per axis (2). The value lists switch individual axes of the anchors and free vertices on or off. Green: result with all axes of the free vertices released.
 
 Note: If all axes of the free vertices are fixed, no vertex can move and no equilibrium shape can be found.
+
+### Example 8 · Assigning force densities
+![Assigning force densities](docs/components/replace.png)
+
+Different force densities are assigned to groups of edges with Replace By Indices (11). All edges start with q = 1. The edges listed in each index group (edge cables, guy ropes, struts) are overwritten with the corresponding value.
 
 ## Requirements
 - Rhino 8
