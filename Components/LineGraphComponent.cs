@@ -17,10 +17,15 @@ namespace Opuntia
                 "Builds a graph topology from lines.\n" +
                 "Points within tolerance are merged to the first point found.\n" +
                 "Duplicate and degenerate edges are removed.\n" +
-                "Zoom in to add outputs (V, E, PP, PL, LP).",
+                "Zoom in to add Tol (default: model tolerance) and outputs (V, E, PP, PL, LP).",
                 "Opuntia",
                 "Graph")
         { }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  ZUI-Grenzen Inputs
+        // ─────────────────────────────────────────────────────────────────────
+        private const int BaseIn = 1, MaxIn = 2;
 
         // ─────────────────────────────────────────────────────────────────────
         //  Optionale Ausgaenge (feste Reihenfolge, per ZUI zuschaltbar)
@@ -35,7 +40,7 @@ namespace Opuntia
         };
 
         // ─────────────────────────────────────────────────────────────────────
-        //  Parameters
+        //  Parameters (Tol per ZUI)
         // ─────────────────────────────────────────────────────────────────────
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
@@ -43,13 +48,6 @@ namespace Opuntia
                 "Lines", "L",
                 "Input lines.",
                 GH_ParamAccess.list);
-
-            pManager.AddNumberParameter(         // 1
-                "Tolerance", "T",
-                "Point merge tolerance.",
-                GH_ParamAccess.item, 0.001);
-
-            pManager[1].Optional = true;
         }
 
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
@@ -61,20 +59,33 @@ namespace Opuntia
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  ZUI
+        //  ZUI: Tol (Input) / V, E, PP, PL, LP (Outputs)
         // ─────────────────────────────────────────────────────────────────────
         public bool CanInsertParameter(GH_ParameterSide side, int index) =>
-            side == GH_ParameterSide.Output &&
-            index == Params.Output.Count &&
-            index <= Extra.Length;
+            side == GH_ParameterSide.Input
+                ? index == Params.Input.Count && index >= BaseIn && index < MaxIn
+                : index == Params.Output.Count && index >= 1 && index <= Extra.Length;
 
         public bool CanRemoveParameter(GH_ParameterSide side, int index) =>
-            side == GH_ParameterSide.Output &&
-            index == Params.Output.Count - 1 &&
-            index > 0;
+            side == GH_ParameterSide.Input
+                ? index == Params.Input.Count - 1 && index >= BaseIn
+                : index == Params.Output.Count - 1 && index > 0;
 
         public IGH_Param CreateParameter(GH_ParameterSide side, int index)
         {
+            if (side == GH_ParameterSide.Input)
+            {
+                if (index == 1) return new Param_Number
+                {
+                    Name = "Tolerance",
+                    NickName = "Tol",
+                    Description = "Point merge tolerance (default: model absolute tolerance).",
+                    Access = GH_ParamAccess.item,
+                    Optional = true
+                };
+                return null;
+            }
+
             IGH_Param p;
             switch (index)
             {
@@ -113,8 +124,8 @@ namespace Opuntia
             if (!DA.GetDataList(0, ghLines)) return;
             // HINWEIS: GH_Line statt Line lesen, sonst wird null still zu (0,0,0).
 
-            double tolerance = Rhino.RhinoDoc.ActiveDoc.ModelAbsoluteTolerance;
-            DA.GetData(1, ref tolerance);
+            double tolerance = Rhino.RhinoDoc.ActiveDoc?.ModelAbsoluteTolerance ?? 0.001;
+            if (Params.Input.Count > 1) DA.GetData(1, ref tolerance);
 
             // ── Vertices ──────────────────────────────────────────────────────
             var vertices = new List<Point3d>();
