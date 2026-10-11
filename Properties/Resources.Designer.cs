@@ -63,6 +63,16 @@ namespace Opuntia.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Opuntia_Icon_CreateValues {
+            get {
+                object obj = ResourceManager.GetObject("Opuntia_Icon_CreateValues", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Opuntia_Icon_EntKnick {
             get {
                 object obj = ResourceManager.GetObject("Opuntia_Icon_EntKnick", resourceCulture);

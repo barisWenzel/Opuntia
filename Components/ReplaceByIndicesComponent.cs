@@ -60,6 +60,11 @@ namespace Opuntia
             Message = "Replace By Indices";
         }
 
+        // ─────────────────────────────────────────────
+        //  Icon & Guid
+        // ─────────────────────────────────────────────
+        protected override System.Drawing.Bitmap Icon
+     => Opuntia.Properties.Resources.Opuntia_Icon_CreateValues;
         public override Guid ComponentGuid => new Guid("DAC33FDB-7444-4ADF-8EAF-46476FF6E6C1");
     }
 }
