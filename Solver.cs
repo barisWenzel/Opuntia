@@ -4,19 +4,21 @@ using System.Diagnostics;
 using System.Linq;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
+using Grasshopper.Kernel.Parameters;
 using Grasshopper.Kernel.Types;
 using Rhino;
 using Rhino.Geometry;
 
 namespace Opuntia
 {
-    public partial class ForceDensitySolver : GH_Component
+    public partial class ForceDensitySolver : GH_Component, IGH_VariableParameterComponent
     {
         public ForceDensitySolver()
             : base(
                 "Force Density Solver", "FDSolver",
                 "Solves structures using the Force Density Method (FDM). "
-              + "Optional Constraint and Entknick via Options input.Version =" + Ver,
+              + "Optional Constraint and Entknick via Options input. "
+              + "Zoom in to show It (default 1000), Tol (default: model tolerance), Res and dV. Version = " + Ver,
                 "Opuntia", "Solver")
         {
         }
@@ -43,8 +45,11 @@ namespace Opuntia
         private static readonly string Ver = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
         private double lastMaxDelta;
 
+        // ── ZUI-Grenzen ──
+        private const int BaseIn = 5, MaxIn = 7, BaseOut = 4, MaxOut = 6;
+
         // ─────────────────────────────────────────────
-        //  Inputs
+        //  Inputs (It, Tol per ZUI)
         // ─────────────────────────────────────────────
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
@@ -67,13 +72,6 @@ namespace Opuntia
                 "Optional solver methods (ConstraintOptions / EntknickOptions).",
                 GH_ParamAccess.list);
 
-            pManager.AddIntegerParameter("MaxIterations", "MaxIt",
-                "Maximum number of iterations.", GH_ParamAccess.item, 1000);
-
-            pManager.AddNumberParameter("Tolerance", "Tol",
-                "Convergence tolerance.", GH_ParamAccess.item,
-                Rhino.RhinoDoc.ActiveDoc.ModelAbsoluteTolerance);
-
             // Optional
             pManager[0].Optional = true;  // Fix
             pManager[2].Optional = true;  // Loads
@@ -81,7 +79,7 @@ namespace Opuntia
         }
 
         // ─────────────────────────────────────────────
-        //  Outputs
+        //  Outputs (Res, dV per ZUI)
         // ─────────────────────────────────────────────
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
         {
@@ -89,8 +87,6 @@ namespace Opuntia
             pManager.AddNumberParameter("Forces", "N", "Axial forces N = q * L per member.", GH_ParamAccess.list);
             pManager.AddNumberParameter("Lengths", "L", "Computed member lengths.", GH_ParamAccess.list);
             pManager.AddLineParameter("Lines", "E", "Result edges as lines.", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Residuals", "Res", "Force-equilibrium residual per node (free axes only).", GH_ParamAccess.list);
-            pManager.AddNumberParameter("NodeDelta", "dV", "Displacement of each node in the final iteration.", GH_ParamAccess.list);
         }
 
         // ─────────────────────────────────────────────
@@ -105,7 +101,7 @@ namespace Opuntia
             var q = new List<double>();
             var options = new List<IGH_Goo>();
             maxIterations = 1000;
-            tol = 0;
+            tol = RhinoDoc.ActiveDoc?.ModelAbsoluteTolerance ?? 0.001;
 
             if (!DA.GetDataList(0, fixInput))
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Warning,
@@ -120,8 +116,8 @@ namespace Opuntia
             if (!DA.GetDataList(2, loads)) loads = new List<Vector3d>();
             if (!DA.GetDataList(3, q)) return;
             DA.GetDataList(4, options);
-            DA.GetData(5, ref maxIterations);
-            DA.GetData(6, ref tol);
+            if (Params.Input.Count > 5) DA.GetData(5, ref maxIterations);
+            if (Params.Input.Count > 6) DA.GetData(6, ref tol);
 
             // ── Options entpacken ─────────────────────
             ConstraintOptions constraint = null;
@@ -260,17 +256,25 @@ namespace Opuntia
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Warning,
                     $"Not converged after {lastRunIt} iterations (max dV = {lastMaxDelta:G4}, Tol = {tol:G4}).");
 
+            double maxRes = residuals.Count > 0 ? residuals.Max() : 0.0;
+            double maxN = forces.Count > 0 ? forces.Max(f => Math.Abs(f)) : 0.0;
+            bool equilibrium = maxRes <= 1e-3 * Math.Max(maxN, 1e-9);
+            if (converged && !equilibrium)
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning,
+                    $"No equilibrium: max Res = {maxRes:G4} (> 0.1 % of max |N| = {maxN:G4}). " +
+                    "Supports or constraints may over-determine the system.");
+
             Message = converged
-                ? $"it:{initIt} \n t:{sw.ElapsedMilliseconds}ms"
-                : $"NOT CONVERGED \n it:{lastRunIt}";
+                ? $"it:{initIt}\nRes:{maxRes:G3}\nt:{sw.ElapsedMilliseconds}ms"
+                : $"NOT CONVERGED\nit:{lastRunIt}";
 
             // ── Outputs ───────────────────────────────
             DA.SetDataList(0, positions.ToList());
             DA.SetDataList(1, forces);
             DA.SetDataList(2, lengths);
             DA.SetDataList(3, resultLines);
-            DA.SetDataList(4, residuals);
-            DA.SetDataList(5, nodeDelta.ToList());
+            if (Params.Output.Count > 4) DA.SetDataList(4, residuals);
+            if (Params.Output.Count > 5) DA.SetDataList(5, nodeDelta.ToList());
         }
 
         // ─────────────────────────────────────────────
@@ -394,6 +398,64 @@ namespace Opuntia
             }
             return lastIt;
         }
+
+        // ─────────────────────────────────────────────
+        //  ZUI: It, Tol (Inputs) / Res, dV (Outputs)
+        // ─────────────────────────────────────────────
+        public bool CanInsertParameter(GH_ParameterSide side, int index) =>
+            side == GH_ParameterSide.Input
+                ? index == Params.Input.Count && index >= BaseIn && index < MaxIn
+                : index == Params.Output.Count && index >= BaseOut && index < MaxOut;
+
+        public bool CanRemoveParameter(GH_ParameterSide side, int index) =>
+            side == GH_ParameterSide.Input
+                ? index == Params.Input.Count - 1 && index >= BaseIn
+                : index == Params.Output.Count - 1 && index >= BaseOut;
+
+        public IGH_Param CreateParameter(GH_ParameterSide side, int index)
+        {
+            if (side == GH_ParameterSide.Input)
+            {
+                if (index == 5) return new Param_Integer
+                {
+                    Name = "MaxIterations",
+                    NickName = "It",
+                    Description = "Maximum number of iterations (default 1000).",
+                    Access = GH_ParamAccess.item,
+                    Optional = true
+                };
+                if (index == 6) return new Param_Number
+                {
+                    Name = "Tolerance",
+                    NickName = "Tol",
+                    Description = "Convergence tolerance (default: model absolute tolerance).",
+                    Access = GH_ParamAccess.item,
+                    Optional = true
+                };
+            }
+            else
+            {
+                if (index == 4) return new Param_Number
+                {
+                    Name = "Residuals",
+                    NickName = "Res",
+                    Description = "Force-equilibrium residual per node (free axes only).",
+                    Access = GH_ParamAccess.list
+                };
+                if (index == 5) return new Param_Number
+                {
+                    Name = "NodeDelta",
+                    NickName = "dV",
+                    Description = "Displacement of each node in the final iteration.",
+                    Access = GH_ParamAccess.list
+                };
+            }
+            return null;
+        }
+
+        public bool DestroyParameter(GH_ParameterSide side, int index) => true;
+
+        public void VariableParameterMaintenance() { }
 
         // ─────────────────────────────────────────────
         //  Icon & Guid

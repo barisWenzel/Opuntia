@@ -13,7 +13,7 @@ namespace Opuntia
         public ConstraintOptionsComponent()
             : base(
                 "Constraint Options", "Constraint",
-                "Target-length constraint (Method 1). Attach to the solver's Options input.",
+                "Target-length constraint. Attach to the solver's Options input.",
                 "Opuntia", "Options")
         {
         }
@@ -21,12 +21,12 @@ namespace Opuntia
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
             pManager.AddIntegerParameter(
-                "FixedEdgeIndices", "FixedEI",
+                "FixedEdgeIndices", "EI",
                 "Edge indices subject to target-length constraint.",
                 GH_ParamAccess.list);
 
             pManager.AddNumberParameter(
-                "TargetLengths", "TargetL",
+                "TargetLengths", "Le",
                 "Target lengths for fixed edges (paired with FixedEdgeIndices).",
                 GH_ParamAccess.list);
 
@@ -61,7 +61,9 @@ namespace Opuntia
             DA.SetData(0, new GH_SolverOption(opt));
         }
 
-        protected override System.Drawing.Bitmap Icon => null;
+        protected override System.Drawing.Bitmap Icon
+            => Opuntia.Properties.Resources.Opuntia_Icon_Zwang;
+            
 
         public override Guid ComponentGuid =>
             new Guid("A1B2C3D4-0001-4001-9001-0123456789AB");

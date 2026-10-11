@@ -12,6 +12,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Helpers.cs" />
+    <Compile Remove="RegionUnion.cs" />
+    <Compile Remove="Zirkelmethode.cs" />
   </ItemGroup>
 
   <ItemGroup>

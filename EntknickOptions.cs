@@ -26,12 +26,12 @@ namespace Opuntia
                 GH_ParamAccess.list);
 
             pManager.AddNumberParameter(
-                "AngleTolerance", "AngTol",
+                "AngleTolerance", "Tol",
                 "Minimum collinearity angle (degrees) for extrapolation.",
                 GH_ParamAccess.item, 30.0);
 
             pManager.AddIntegerParameter(
-                "SmoothPasses", "Passes",
+                "SmoothPasses", "It",
                 "Number of unknot + re-relaxation passes after convergence.",
                 GH_ParamAccess.item, 3);
         }
@@ -58,7 +58,8 @@ namespace Opuntia
             DA.SetData(0, new GH_SolverOption(opt));
         }
 
-        protected override System.Drawing.Bitmap Icon => null;
+        protected override System.Drawing.Bitmap Icon
+             => Opuntia.Properties.Resources.Opuntia_Icon_EntKnick;
 
         public override Guid ComponentGuid =>
             new Guid("A1B2C3D4-0002-4002-9002-0123456789AB");

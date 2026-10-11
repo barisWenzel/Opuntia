@@ -63,6 +63,16 @@ namespace Opuntia.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Opuntia_Icon_EntKnick {
+            get {
+                object obj = ResourceManager.GetObject("Opuntia_Icon_EntKnick", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Opuntia_Icon_Spinne {
             get {
                 object obj = ResourceManager.GetObject("Opuntia_Icon_Spinne", resourceCulture);
@@ -76,6 +86,16 @@ namespace Opuntia.Properties {
         internal static System.Drawing.Bitmap Opuntia_Icon_Topo {
             get {
                 object obj = ResourceManager.GetObject("Opuntia_Icon_Topo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Opuntia_Icon_Zwang {
+            get {
+                object obj = ResourceManager.GetObject("Opuntia_Icon_Zwang", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
