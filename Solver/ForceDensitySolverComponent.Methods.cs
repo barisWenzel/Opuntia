@@ -5,12 +5,12 @@ using Rhino.Geometry;
 
 namespace Opuntia
 {
-    public partial class ForceDensitySolver
+    public partial class ForceDensitySolverComponent
     {
         // ─────────────────────────────────────────────
         //  Methode: Target-Length-Korrektur (Methode 1)
         // ─────────────────────────────────────────────
-        private void ApplyConstraint(ConstraintOptions c)
+        private void ApplyConstraint(TargetLengthOptions c)
         {
             for (int k = 0; k < c.FixedEdgeIndices.Count; k++)
             {

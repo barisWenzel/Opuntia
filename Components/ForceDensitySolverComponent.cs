@@ -1,19 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using Grasshopper.Kernel;
-using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Parameters;
 using Grasshopper.Kernel.Types;
 using Rhino;
 using Rhino.Geometry;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Opuntia
 {
-    public partial class ForceDensitySolver : GH_Component, IGH_VariableParameterComponent
+    public partial class ForceDensitySolverComponent : GH_Component, IGH_VariableParameterComponent
     {
-        public ForceDensitySolver()
+        public ForceDensitySolverComponent()
             : base(
                 "Force Density Solver", "FDSolver",
                 "Solves structures using the Force Density Method (FDM). "
@@ -120,14 +119,14 @@ namespace Opuntia
             if (Params.Input.Count > 6) DA.GetData(6, ref tol);
 
             // ── Options entpacken ─────────────────────
-            ConstraintOptions constraint = null;
-            EntknickOptions entknick = null;
+            TargetLengthOptions constraint = null;
+            DeKinkOptions entknick = null;
             foreach (var goo in options)
             {
                 if (goo is GH_SolverOption so)
                 {
-                    if (so.Value is ConstraintOptions c) constraint = c;
-                    else if (so.Value is EntknickOptions e) entknick = e;
+                    if (so.Value is TargetLengthOptions c) constraint = c;
+                    else if (so.Value is DeKinkOptions e) entknick = e;
                 }
             }
 
@@ -335,7 +334,7 @@ namespace Opuntia
         //  (mit optionaler Target-Length-Korrektur, Methode 1)
         //  Rueckgabe: Anzahl benoetigter Iterationen
         // ─────────────────────────────────────────────
-        private int RelaxToEquilibrium(ConstraintOptions constraint)
+        private int RelaxToEquilibrium(TargetLengthOptions constraint)
         {
             Point3d[] prevPositions = (Point3d[])positions.Clone();
             int lastIt = maxIterations;

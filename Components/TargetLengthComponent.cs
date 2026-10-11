@@ -8,9 +8,9 @@ namespace Opuntia
     /// Erzeugt ein ConstraintOptions-Objekt (Methode 1, laengenbasiert)
     /// zum Anhaengen an den Force Density Solver.
     /// </summary>
-    public class ConstraintOptionsComponent : GH_Component
+    public class TargetLengthComponent : GH_Component
     {
-        public ConstraintOptionsComponent()
+        public TargetLengthComponent()
             : base(
                 "Constraint Options", "Constraint",
                 "Target-length constraint. Attach to the solver's Options input.",
@@ -57,7 +57,7 @@ namespace Opuntia
                 return;
             }
 
-            var opt = new ConstraintOptions(fixedEdges, targetLengths);
+            var opt = new TargetLengthOptions(fixedEdges, targetLengths);
             DA.SetData(0, new GH_SolverOption(opt));
         }
 

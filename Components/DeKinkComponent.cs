@@ -8,12 +8,13 @@ namespace Opuntia
     /// Erzeugt ein EntknickOptions-Objekt (Methode 3, Randentknickung)
     /// zum Anhaengen an den Force Density Solver.
     /// </summary>
-    public class EntknickOptionsComponent : GH_Component
+    public class DeKinkComponent : GH_Component
     {
-        public EntknickOptionsComponent()
+        public DeKinkComponent()
             : base(
-                "Entknick Options", "Entknick",
-                "Boundary unknotting (Method 3). Attach to the solver's Options input.",
+                 "De-Kink", "DeKink",
+                "Smooths kinks along boundary vertices after convergence (Method 3). " +
+                "Connect to the solver's O input.",
                 "Opuntia", "Options")
         {
         }
@@ -54,7 +55,7 @@ namespace Opuntia
             DA.GetData(1, ref angleTol);
             DA.GetData(2, ref smoothPasses);
 
-            var opt = new EntknickOptions(boundary, angleTol, smoothPasses);
+            var opt = new DeKinkOptions(boundary, angleTol, smoothPasses);
             DA.SetData(0, new GH_SolverOption(opt));
         }
 
