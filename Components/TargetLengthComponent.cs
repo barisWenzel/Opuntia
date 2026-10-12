@@ -12,22 +12,22 @@ namespace Opuntia
     {
         public TargetLengthComponent()
             : base(
-                "Constraint Options", "Constraint",
-                "Target-length constraint. Attach to the solver's Options input.",
-                "Opuntia", "Options")
+                "Target Length", "TargetL",
+                "Target-length constraint for selected edges. Connect to the solver's O input.",
+                 "Opuntia", "Options")
         {
         }
 
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
             pManager.AddIntegerParameter(
-                "FixedEdgeIndices", "EI",
-                "Edge indices subject to target-length constraint.",
-                GH_ParamAccess.list);
+                "EdgeIndices", "EI",
+                "Edge indices subject to the target-length constraint.",
+                 GH_ParamAccess.list);
 
             pManager.AddNumberParameter(
                 "TargetLengths", "Le",
-                "Target lengths for fixed edges (paired with FixedEdgeIndices).",
+                "Target lengths, paired with EdgeIndices.",
                 GH_ParamAccess.list);
 
         }

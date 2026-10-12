@@ -60,7 +60,7 @@ namespace Opuntia
             pManager.AddGenericParameter("Graph", "G",
                 "Graph from Line Graph.", GH_ParamAccess.item);
 
-            pManager.AddVectorParameter("Loads", "P",
+            pManager.AddVectorParameter("Loads", "F",
                 "External load vectors per node.", GH_ParamAccess.list);
 
             pManager.AddNumberParameter("ForceDensity", "q",
@@ -342,7 +342,8 @@ namespace Opuntia
             for (int it = 0; it < maxIterations; it++)
             {
                 // Jacobi-Schritt
-                Point3d[] result = (Point3d[])positions.Clone();
+                //Point3d[] result = (Point3d[])positions.Clone();
+                Point3d[] result = positions;
                 for (int v = 0; v < vCount; v++)
                 {
                     if (isAnchor[v]) continue;

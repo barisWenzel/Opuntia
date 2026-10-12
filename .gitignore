@@ -25,6 +25,9 @@
 **/[Oo]bj/
 *.user
 *.suo
+ .vs/
+   obj/
+   bin/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
