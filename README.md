@@ -56,7 +56,7 @@ All index lists (edges, vertices) refer to the order of LGraph. If the input geo
 ### Example 1 · Four-point net
 ![Four-point net](docs/examples/1.png)
 
-Form-finding of a classic four-point cable net. Two anchor points are raised and two are lowered, resulting in an anticlastic, saddle-shaped surface. Coordinates, force densities and load vectors are taken from the [STIFF example dataset of TU Munich](https://www.cee.ed.tum.de/fileadmin/w00cbe/st/Software/Education/Stiff/Beispiele/Kraftdichte_4P-Zelt_1_3D.xlsx).
+Form-finding of a classic four-point cable net. Two anchor points are raised and two are lowered, resulting in an anticlastic, saddle-shaped surface. Coordinates, force densities and load vectors are taken from the [STIFF example dataset of TU Munich](https://www.cee.ed.tum.de/st/software-1/stiff/).
 
 1. **Force densities (in4)**: All edges are given q = 1. The edge cables listed in `Indices_Edge_Cables` are then overwritten with q = 5.
 2. **Loads (in3)**: For the form-finding of prestressed tension structures the load vector is {0, 0, 0}. As this is the default, P can be left empty.
