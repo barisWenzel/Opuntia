@@ -125,32 +125,9 @@ Different force densities are assigned to groups of edges with Replace By Indice
 
 ### OP1 · Line Graph `LGraph`
 
-<table>
-<tr><th>Inputs</th><th></th><th>Outputs</th></tr>
-<tr>
-<td valign="top">
-
-| Name | Description |
-|---|---|
-| L | Input lines |
-| *Tol* | *Point merge tolerance (default: model tolerance)* |
-
 </td>
-<td valign="middle" align="center" width="170"><img src="docs/components/lgraph.png" width="150"></td>
+<td valign="middle" align="center" width="170"><img src="docs/components/lgraph.png" width="500"></td>
 <td valign="top">
-
-| Name | Description |
-|---|---|
-| G | Graph object for the solver |
-| *V* | *Vertex positions* |
-| *E* | *Edges* |
-| *PP* | *Point-to-point adjacency (path = vertex, values = neighbour vertices)* |
-| *PL* | *Point-to-line adjacency (path = vertex, values = incident edges)* |
-| *LP* | *Line-to-point adjacency (path = edge, values = start and end vertex)* |
-
-</td>
-</tr>
-</table>
 
 Builds a graph from a list of lines. Points within the tolerance are merged to the first point found; duplicate and degenerate edges are removed. The graph `G` is passed to the solver as a single object.
 
@@ -160,37 +137,11 @@ Builds a graph from a list of lines. Points within the tolerance are merged to t
 
 ### OP2 · Force Density Solver `FDSolver`
 
-<table>
-<tr><th>Inputs</th><th></th><th>Outputs</th></tr>
-<tr>
-<td valign="top">
-
-| Name | Description |
-|---|---|
-| Fix | Supports, see below (optional) |
-| G | Graph from LGraph |
-| P | Load vector per node (optional) |
-| q | Force density per edge |
-| O | Target Length and/or De-Kink options (optional) |
-| *It* | *Max. iterations (default 1000, max. 10 000)* |
-| *Tol* | *Convergence tolerance (default: model tolerance)* |
 
 </td>
-<td valign="middle" align="center" width="170"><img src="docs/components/solver.png" width="150"></td>
+<td valign="middle" align="center" width="170"><img src="docs/components/solver.png" width="500"></td>
 <td valign="top">
 
-| Name | Description |
-|---|---|
-| V | Node positions in equilibrium |
-| N | Axial force per member, N = q · L |
-| L | Member lengths |
-| E | Result edges |
-| *Res* | *Residual force per node (fixed axes excluded)* |
-| *dV* | *Node displacement in the final iteration* |
-
-</td>
-</tr>
-</table>
 
 Iterative Force Density solver (Gauss-Seidel relaxation) for equilibrium form-finding of cable nets and shells. Optional parameters are added via ZUI (see OP1). The message below the component shows the number of iterations (`it`), the largest nodal residual (`Res`) and the computation time (`t`). For the underlying method, see [Method](#method).
 
@@ -222,27 +173,11 @@ A plain list of integers can be connected directly. Vertex indices can be checke
 
 ### OP3 · Target Length `TargetL`
 
-<table>
-<tr><th>Inputs</th><th></th><th>Outputs</th></tr>
-<tr>
-<td valign="top">
-
-| Name | Description |
-|---|---|
-| EI | Edge indices subject to the target-length constraint |
-| Le | Target lengths, paired with EI |
 
 </td>
-<td valign="middle" align="center" width="170"><img src="docs/components/targetlength.png" width="150"></td>
+<td valign="middle" align="center" width="170"><img src="docs/components/targetlength.png" width="500"></td>
 <td valign="top">
 
-| Name | Description |
-|---|---|
-| O | Option object, connect to the solver's O input |
-
-</td>
-</tr>
-</table>
 
 Target-length constraint for selected edges (e.g. compression struts). The force density of a constrained edge is not held constant: in each correction step it is derived from local nodal equilibrium, so that the edge carries exactly the residual force along its axis.
 
@@ -252,28 +187,11 @@ A target length can only be reached if the system has enough free degrees of fre
 
 ### OP4 · De-Kink `DeKink`
 
-<table>
-<tr><th>Inputs</th><th></th><th>Outputs</th></tr>
-<tr>
+</td>
+<td valign="middle" align="center" width="170"><img src="docs/components/dekink.png" width="500"></td>
 <td valign="top">
 
-| Name | Description |
-|---|---|
-| BI | Indices of boundary nodes to dekink |
-| Tol | Angle tolerance in degrees for extrapolation (default 30) |
-| It | Number of dekink and re-relaxation passes (default 3) |
 
-</td>
-<td valign="middle" align="center" width="170"><img src="docs/components/dekink.png" width="150"></td>
-<td valign="top">
-
-| Name | Description |
-|---|---|
-| O | Option object, connect to the solver's O input |
-
-</td>
-</tr>
-</table>
 
 Boundary dekinking. Removes kinks at selected boundary nodes by extrapolation along collinear neighbours, followed by re-relaxation. It acts after convergence of the solver.
 
@@ -281,28 +199,10 @@ Boundary dekinking. Removes kinks at selected boundary nodes by extrapolation al
 
 ### OP5 · Replace By Indices `ReplaceIndices`
 
-<table>
-<tr><th>Inputs</th><th></th><th>Outputs</th></tr>
-<tr>
+</td>
+<td valign="middle" align="center" width="170"><img src="docs/components/replace.png" width="500"></td>
 <td valign="top">
 
-| Name | Description |
-|---|---|
-| L | Input list |
-| I | Indices of the items to replace |
-| V | Replacement values, paired with I |
-
-</td>
-<td valign="middle" align="center" width="170"><img src="docs/components/replace.png" width="150"></td>
-<td valign="top">
-
-| Name | Description |
-|---|---|
-| R | Resulting list |
-
-</td>
-</tr>
-</table>
 
 Replaces items of a list at given indices, e.g. to assign individual force densities to groups of edges without data tree handling (see Example 8).
 
