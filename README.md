@@ -125,9 +125,9 @@ Different force densities are assigned to groups of edges with Replace By Indice
 
 ### OP1 · Line Graph `LGraph`
 
-</td>
-<td valign="middle" align="center" width="170"><img src="docs/components/lgraph.png" width="500"></td>
-<td valign="top">
+<p align="center">
+<img src="docs/components/lgraph.png" width="500">
+</p>
 
 Builds a graph from a list of lines. Points within the tolerance are merged to the first point found; duplicate and degenerate edges are removed. The graph `G` is passed to the solver as a single object.
 
@@ -138,9 +138,9 @@ Builds a graph from a list of lines. Points within the tolerance are merged to t
 ### OP2 · Force Density Solver `FDSolver`
 
 
-</td>
-<td valign="middle" align="center" width="170"><img src="docs/components/solver.png" width="500"></td>
-<td valign="top">
+<p align="center">
+<img src="docs/components/solver.png" width="500">
+</p>
 
 
 Iterative Force Density solver (Gauss-Seidel relaxation) for equilibrium form-finding of cable nets and shells. Optional parameters are added via ZUI (see OP1). The message below the component shows the number of iterations (`it`), the largest nodal residual (`Res`) and the computation time (`t`). For the underlying method, see [Method](#method).
@@ -174,10 +174,9 @@ A plain list of integers can be connected directly. Vertex indices can be checke
 ### OP3 · Target Length `TargetL`
 
 
-</td>
-<td valign="middle" align="center" width="170"><img src="docs/components/targetlength.png" width="500"></td>
-<td valign="top">
-
+<p align="center">
+<img src="docs/components/targetlength.png" width="500">
+</p>
 
 Target-length constraint for selected edges (e.g. compression struts). The force density of a constrained edge is not held constant: in each correction step it is derived from local nodal equilibrium, so that the edge carries exactly the residual force along its axis.
 
@@ -187,9 +186,9 @@ A target length can only be reached if the system has enough free degrees of fre
 
 ### OP4 · De-Kink `DeKink`
 
-</td>
-<td valign="middle" align="center" width="170"><img src="docs/components/dekink.png" width="500"></td>
-<td valign="top">
+<p align="center">
+<img src="docs/components/dekink.png" width="500">
+</p>
 
 
 
@@ -199,9 +198,9 @@ Boundary dekinking. Removes kinks at selected boundary nodes by extrapolation al
 
 ### OP5 · Replace By Indices `ReplaceIndices`
 
-</td>
-<td valign="middle" align="center" width="170"><img src="docs/components/replace.png" width="500"></td>
-<td valign="top">
+<p align="center">
+<img src="docs/components/replace.png" width="500">
+</p>
 
 
 Replaces items of a list at given indices, e.g. to assign individual force densities to groups of edges without data tree handling (see Example 8).
