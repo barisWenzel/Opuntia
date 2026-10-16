@@ -8,7 +8,7 @@ namespace Opuntia
     public partial class ForceDensitySolverComponent
     {
         // ─────────────────────────────────────────────
-        //  Methode: Target-Length-Korrektur (Methode 1)
+        //  Methode: Target-Length-Korrektur 
         // ─────────────────────────────────────────────
         private void ApplyConstraint(TargetLengthOptions c)
         {
@@ -49,28 +49,42 @@ namespace Opuntia
                 }
                 else
                 {
-                    // Druckstab: q aus axialem Gleichgewicht am freien Knoten
-                    int free = !isAnchor[b] ? b : (!isAnchor[a] ? a : -1);
-                    int other = (free == b) ? a : b;
-                    if (free < 0) continue;
+                    // ── Druckstab ──
+                    // Ein Stab trägt nur Axialkraft. q wird so gewählt, dass die Stabkraft
+                    // q·L die axiale Komponente der übrigen Knotenkräfte (rest) ausgleicht.
+                    // Der Querteil von rest bleibt stehen und wird im Positionsschritt
+                    // (Gauss-Seidel) abgebaut.
+                    bool freeA = !isAnchor[a];
+                    bool freeB = !isAnchor[b];
+                    if (!freeA && !freeB) continue;   // beide Anker: kein Gleichgewicht prüfbar
 
-                    Vector3d axis = positions[other] - positions[free];
-                    double L = axis.Length;
-                    if (L < 1e-10) continue;
-                    axis /= L;
-
-                    Vector3d rest = Vector3d.Zero;
-                    int[] nbf = neighborCache[free];
-                    for (int i = 0; i < nbf.Length; i++)
+                    double qEq;
+                    if (freeA && freeB)
                     {
-                        if (edgeCacheN[free][i] == e) continue;
-                        rest += qCache[free][i] * (positions[nbf[i]] - positions[free]);
+                        // Beide Enden frei (z. B. zwischen Zugseilen):
+                        // Der Stab hat nur ein q, das an beiden Enden passen muss.
+                        // q_eq wird an a und b getrennt bestimmt und gemittelt,
+                        // damit kein Ende bevorzugt wird.
+                        double qa = AxialQEq(a, e, b);
+                        double qb = AxialQEq(b, e, a);
+                        if (double.IsNaN(qa) || double.IsNaN(qb)) continue;
+                        qEq = 0.5 * (qa + qb);
                     }
-                    rest += loadVec[free];
+                    else
+                    {
+                        // Ein Ende ist Anker: Der Anker nimmt beliebige Reaktionen auf,
+                        // relevant ist nur das Gleichgewicht am freien Ende.
+                        qEq = freeB ? AxialQEq(b, e, a) : AxialQEq(a, e, b);
+                        if (double.IsNaN(qEq)) continue;
+                    }
 
-                    double qEq = -(rest * axis) / L;
-                    double relax = 0.5;
+                    // Unterrelaxation: q nur halb auf q_eq ziehen.
+                    // rest beruht auf noch nicht konvergierten q und Positionen der Nachbarn,
+                    // q_eq ist daher nur eine Schätzung. Volle Übernahme würde oszillieren.
+                    const double relax = 0.5;
                     double qNew = qEdge[e] + relax * (qEq - qEdge[e]);
+
+                    // q in Kantenliste und in beide Knoten-Caches schreiben
                     qEdge[e] = qNew;
                     SyncQ(a, e, qNew);
                     SyncQ(b, e, qNew);
@@ -88,8 +102,38 @@ namespace Opuntia
             }
         }
 
+        /// <summary>
+        /// Kraftdichte q der Kante e, die am Knoten 'node' das axiale Gleichgewicht herstellt.
+        /// Knotengleichgewicht KDM:  Σ q_i·(x_j − x_node) + P = 0
+        /// Zerlegung:                rest + q_e·L·axis = 0
+        /// Projektion auf Achse:     rest·axis + q_e·L = 0   →   q_e = −(rest·axis) / L
+        /// q_e &lt; 0 bedeutet Druck (rest drückt in Richtung otherNode).
+        /// </summary>
+        private double AxialQEq(int node, int e, int otherNode)
+        {
+            // Einheitsvektor der Stabachse, vom betrachteten Knoten zum anderen Ende
+            Vector3d axis = positions[otherNode] - positions[node];
+            double L = axis.Length;
+            if (L < 1e-10) return double.NaN;   // entarteter Stab
+            axis /= L;
+
+            // rest = Summe aller Stabkräfte am Knoten außer Kante e, plus Last.
+            // Jeder Term q_i·(x_j − x_node) ist eine Stabkraft als Vektor (Betrag q_i·L_i).
+            Vector3d rest = Vector3d.Zero;
+            int[] nb = neighborCache[node];
+            for (int i = 0; i < nb.Length; i++)
+            {
+                if (edgeCacheN[node][i] == e) continue;   // Druckstab selbst auslassen
+                rest += qCache[node][i] * (positions[nb[i]] - positions[node]);
+            }
+            rest -= loadVec[node];
+
+            // Nur die axiale Komponente von rest kann der Stab aufnehmen
+            return -(rest * axis) / L;
+        }
+
         // ─────────────────────────────────────────────
-        //  Methode: Randentknickung (Methode 3)
+        //  Methode: Randentknickung 
         //  Randknoten kollinear zum inneren Anschlussseil,
         //  Rand-q per Krafterhalt (F = q_alt * L_alt) nachführen.
         // ─────────────────────────────────────────────
